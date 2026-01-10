@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Crimson+Pro:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply font-body text-ink bg-cream antialiased;
+  }
+
+  ::selection {
+    @apply bg-accent text-ink;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-cream;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-accent border-2 border-cream;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-accent-dark;
+}

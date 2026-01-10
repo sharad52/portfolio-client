@@ -1,0 +1,30 @@
+# Add Your Images Here
+
+## What to Add:
+
+### Required Images (Recommended):
+- `profile.jpg` - Your professional photo (800x800px)
+- `hero-background.jpg` - Hero section background (1920x1080px)
+
+### Optional Images:
+- Project screenshots in `/projects/` folder
+- Blog post covers in `/blog/` folder
+- Technology icons in `/tech-icons/` folder
+- Company logos in `/company-logos/` folder
+
+## Quick Tips:
+
+1. **Keep file sizes small** - Compress images before uploading
+2. **Use descriptive names** - `ecommerce-project-cover.jpg` not `img123.jpg`
+3. **Consistent formats** - JPG for photos, PNG for graphics, SVG for icons
+4. **Optimize before upload** - Use TinyPNG or similar tools
+
+## Image Sources:
+
+If you don't have images yet:
+- **Unsplash** (https://unsplash.com) - Free high-quality photos
+- **Pexels** (https://pexels.com) - Free stock photos
+- **UI Faces** (https://uifaces.co) - Profile pictures
+- **Simple Icons** (https://simpleicons.org) - Technology logos
+
+Your images will automatically be available at `/images/filename.jpg` in your code!
