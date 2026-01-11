@@ -13,12 +13,12 @@ export const Hero: React.FC = () => {
         className="absolute inset-0 bg-cover bg-center"
         style={{
           backgroundImage: 'url(/images/hero-background.jpg)',
-          filter: 'brightness(0.3)', // Darken background for text readability
+          // Removed heavy darkening filter - image now visible!
         }}
       />
       
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-cream/95 via-cream/90 to-cream/95" />
+      {/* Light Overlay - Only 40% opacity so background shows through */}
+      <div className="absolute inset-0 bg-gradient-to-b from-cream/40 via-cream/50 to-cream/40" />
 
       {/* Decorative elements */}
       <div className="absolute inset-0 opacity-10">

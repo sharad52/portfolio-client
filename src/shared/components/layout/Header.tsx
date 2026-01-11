@@ -7,6 +7,7 @@ import { ROUTES } from '@/core/routes';
 const navItems = [
   { label: 'Home', path: ROUTES.HOME },
   { label: 'Projects', path: ROUTES.PROJECTS },
+  {label: 'Experience', path: ROUTES.EXPERIENCE},
   { label: 'Blog', path: ROUTES.BLOG },
   { label: 'Contact', path: ROUTES.CONTACT },
 ];

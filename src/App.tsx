@@ -12,8 +12,10 @@ import { HomePage } from '@/pages/HomePage';
 import { BlogPage } from '@/pages/BlogPage';
 import { BlogPostPage } from '@/pages/BlogPostPage';
 import { ProjectsPage } from '@/pages/ProjectsPage';
+import { ExperiencePage } from '@//pages/ExperiencePage';
 import { ContactPage } from '@/pages/ContactPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
+import { ServerErrorPage } from '@/pages/ServerErrorPage';
 
 function App() {
   return (
@@ -27,7 +29,9 @@ function App() {
               <Route path={ROUTES.BLOG} element={<BlogPage />} />
               <Route path={ROUTES.BLOG_POST} element={<BlogPostPage />} />
               <Route path={ROUTES.PROJECTS} element={<ProjectsPage />} />
+              <Route path={ROUTES.EXPERIENCE} element={<ExperiencePage />} />
               <Route path={ROUTES.CONTACT} element={<ContactPage />} />
+              <Route path="/error" element={<ServerErrorPage />} />
               <Route path={ROUTES.NOT_FOUND} element={<NotFoundPage />} />
             </Routes>
           </main>

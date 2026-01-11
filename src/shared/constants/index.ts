@@ -13,10 +13,10 @@ export const DATETIME_FORMAT = 'MMM dd, yyyy HH:mm';
 
 // Social media links
 export const SOCIAL_LINKS = {
-  GITHUB: 'https://github.com/yourusername',
-  LINKEDIN: 'https://linkedin.com/in/yourusername',
+  GITHUB: 'https://github.com/sharad52',
+  LINKEDIN: 'https://linkedin.com/in/sharad52',
   TWITTER: 'https://twitter.com/yourusername',
-  EMAIL: 'mailto:your.email@example.com',
+  EMAIL: 'mailto:ersharadbhandari@gmail.com',
 } as const;
 
 // API endpoints are now in services, not here
