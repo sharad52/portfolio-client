@@ -116,7 +116,7 @@ export class BlogService {
   }
 
   // Get comments for a post
-  static async getComments(postId: string): Promise<BlogComment[]> {
+  static async getComments(_postId: string): Promise<BlogComment[]> {
     // TODO: Replace with real API call
     // return ApiService.get<BlogComment[]>(`${this.BASE_PATH}/posts/${postId}/comments`);
     

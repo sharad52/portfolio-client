@@ -70,7 +70,7 @@ export const Hero: React.FC = () => {
                 <div className="grid grid-cols-2 gap-3 mt-6">
                   <div className="flex items-center gap-2 text-ink/70">
                     <Award className="text-accent" size={20} />
-                    <span className="font-body font-semibold">8+ Years Exp.</span>
+                    <span className="font-body font-semibold">6+ Years Exp.</span>
                   </div>
                   <div className="flex items-center gap-2 text-ink/70">
                     <Code className="text-accent" size={20} />

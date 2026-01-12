@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, ArrowRight } from 'lucide-react';
 import { BlogPost } from '../types';
-import { formatDate, getTimeAgo } from '@/shared/utils/helpers';
+import { formatDate } from '@/shared/utils/helpers';
 import { createBlogPostRoute } from '@/core/routes';
 import { Link } from 'react-router-dom';
 
