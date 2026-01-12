@@ -101,7 +101,7 @@ export const ContactPage: React.FC = () => {
                         href="mailto:your.email@example.com"
                         className="font-body text-lg hover:text-accent transition-colors"
                       >
-                        your.email@example.com
+                        ersharadbhandari@gmail.com
                       </a>
                     </div>
                   </div>
@@ -114,7 +114,7 @@ export const ContactPage: React.FC = () => {
                         href="tel:+1234567890"
                         className="font-body text-lg hover:text-accent transition-colors"
                       >
-                        +1 (234) 567-890
+                        +977-9847895491
                       </a>
                     </div>
                   </div>
@@ -124,7 +124,7 @@ export const ContactPage: React.FC = () => {
                     <div>
                       <p className="font-body text-sm text-cream/60 mb-1">Location</p>
                       <p className="font-body text-lg">
-                        San Francisco, CA
+                        Kathmandu, Nepal
                       </p>
                       <p className="font-body text-sm text-cream/60">
                         Open to remote opportunities
