@@ -6,7 +6,7 @@ export const HomePage: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Home | Developer Portfolio</title>
+        <title>Home | Sharad Bhandari</title>
         <meta name="description" content="Welcome to my developer portfolio - Full Stack Developer crafting elegant solutions" />
       </Helmet>
       <Hero />

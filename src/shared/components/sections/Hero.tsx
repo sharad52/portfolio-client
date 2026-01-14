@@ -74,7 +74,7 @@ export const Hero: React.FC = () => {
                   </div>
                   <div className="flex items-center gap-2 text-ink/70">
                     <Code className="text-accent" size={20} />
-                    <span className="font-body font-semibold">20+ Projects</span>
+                    <span className="font-body font-semibold">15+ Projects</span>
                   </div>
                   <div className="flex items-center gap-2 text-ink/70">
                     <Users className="text-accent" size={20} />
@@ -154,7 +154,7 @@ export const Hero: React.FC = () => {
                 <div className="w-80 h-80 border-4 border-ink shadow-[16px_16px_0px_0px_rgba(15,15,15,1)]">
                   <img
                     src="/images/profile.jpeg"
-                    alt="Your Name"
+                    alt="Sharad Bhandari"
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="320" height="320"%3E%3Crect fill="%23c9a96e" width="320" height="320"/%3E%3Ctext x="50%25" y="50%25" font-size="60" fill="%23faf8f4" text-anchor="middle" dy=".3em" font-family="serif"%3EYN%3C/text%3E%3C/svg%3E';
@@ -291,7 +291,7 @@ export const Hero: React.FC = () => {
               </div>
               <div className="text-center">
                 <div className="font-display text-4xl font-bold text-accent-dark mb-1">
-                  5
+                  20
                 </div>
                 <div className="font-body text-sm text-ink/70">
                   Team Members Led

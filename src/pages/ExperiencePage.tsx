@@ -21,10 +21,10 @@ interface Experience {
 const EXPERIENCES: Experience[] = [
   {
     id: '1',
-    company: 'Tech Innovations Inc.',
+    company: 'Dalfin AI',
     position: 'Senior Software Engineer',
-    location: 'San Francisco, CA',
-    startDate: 'Jan 2022',
+    location: 'Thapathali,Kathmandu | Nepal',
+    startDate: 'Dec 2025',
     endDate: 'Present',
     current: true,
     description: 'Leading full-stack development for enterprise SaaS platform serving 10,000+ users',
@@ -35,16 +35,16 @@ const EXPERIENCES: Experience[] = [
       'Reduced production bugs by 40% through implementation of comprehensive testing strategy',
       'Designed and built scalable CI/CD pipeline reducing deployment time from 2 hours to 15 minutes'
     ],
-    technologies: ['React', 'TypeScript', 'Node.js', 'AWS', 'PostgreSQL', 'Docker', 'Kubernetes'],
-    companyUrl: 'https://techinnovations.com',
+    technologies: ['Python', 'React', 'TypeScript', 'AWS', 'PostgreSQL', 'Docker', 'Kubernetes'],
+    companyUrl: 'https://dalfin.ai',
   },
   {
     id: '2',
-    company: 'Digital Solutions Corp',
-    position: 'Full Stack Developer',
+    company: 'Krispcall Pte. Ltd.',
+    position: 'Software Engineer | Team Lead',
     location: 'Remote',
-    startDate: 'Mar 2020',
-    endDate: 'Dec 2021',
+    startDate: 'Apr 2023',
+    endDate: 'Dec 2025',
     current: false,
     description: 'Developed and maintained multiple client-facing web applications and internal tools',
     achievements: [
@@ -54,16 +54,16 @@ const EXPERIENCES: Experience[] = [
       'Integrated third-party payment systems (Stripe, PayPal) processing $2M+ annually',
       'Optimized database queries reducing load times by 50%'
     ],
-    technologies: ['React', 'Vue.js', 'Express', 'MongoDB', 'Redis', 'GraphQL'],
-    companyUrl: 'https://digitalsolutions.com',
+    technologies: ['Python', 'React', 'PostgreSQL', 'MongoDB', 'Redis', 'GraphQL'],
+    companyUrl: 'https://krispcall.com',
   },
   {
     id: '3',
-    company: 'StartupXYZ',
+    company: 'Divya Technology',
     position: 'Software Engineer',
-    location: 'New York, NY',
-    startDate: 'Jun 2019',
-    endDate: 'Feb 2020',
+    location: 'Kathmandu, Nepal',
+    startDate: 'July 2021',
+    endDate: 'Apr 2023',
     current: false,
     description: 'Contributed to product development in fast-paced startup environment',
     achievements: [
@@ -73,7 +73,7 @@ const EXPERIENCES: Experience[] = [
       'Fixed 100+ bugs and implemented performance improvements',
       'Contributed to open-source libraries used by the engineering team'
     ],
-    technologies: ['React', 'JavaScript', 'Node.js', 'MySQL', 'Git'],
+    technologies: ['Python/Django', 'JavaScript', 'KnockOut.js', 'PostgreSQL', 'Git'],
   },
 ];
 
@@ -98,7 +98,7 @@ export const ExperiencePage: React.FC = () => {
             </h1>
             <div className="h-1 w-32 bg-accent mb-6" />
             <p className="font-body text-xl text-ink/70 max-w-3xl">
-              Over 5+ years of experience building scalable web applications, leading development teams, 
+              Over 6+ years of experience building scalable web applications, leading development teams, 
               and delivering high-impact solutions for companies ranging from startups to enterprises.
             </p>
           </motion.div>
@@ -232,7 +232,7 @@ export const ExperiencePage: React.FC = () => {
             className="mt-20 grid md:grid-cols-4 gap-6 max-w-5xl mx-auto"
           >
             {[
-              { label: 'Years Experience', value: '5+' },
+              { label: 'Years Experience', value: '6+' },
               { label: 'Companies Worked', value: '3' },
               { label: 'Projects Delivered', value: '20+' },
               { label: 'Team Members Led', value: '5+' },

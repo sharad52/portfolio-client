@@ -52,7 +52,7 @@ export const ContactPage: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Contact | Senior Software Engineer</title>
+        <title>Contact | Sharad Bhandari</title>
         <meta name="description" content="Get in touch to discuss opportunities, collaborations, or projects" />
       </Helmet>
 
@@ -226,7 +226,7 @@ export const ContactPage: React.FC = () => {
                         required
                         className="w-full px-4 py-3 border-2 border-ink bg-cream font-body text-lg 
                                  focus:outline-none focus:border-accent transition-colors"
-                        placeholder="John Doe"
+                        placeholder="Write your name here"
                       />
                     </div>
 
@@ -246,7 +246,7 @@ export const ContactPage: React.FC = () => {
                         required
                         className="w-full px-4 py-3 border-2 border-ink bg-cream font-body text-lg 
                                  focus:outline-none focus:border-accent transition-colors"
-                        placeholder="john@example.com"
+                        placeholder="yourmail@example.com"
                       />
                     </div>
 
@@ -342,7 +342,7 @@ export const ContactPage: React.FC = () => {
               </h3>
               <p className="font-body text-lg text-ink/80 mb-6">
                 I specialize in building scalable web applications, architecting cloud infrastructure, 
-                and leading development teams. With 8+ years of experience in React, Node.js, TypeScript, 
+                and leading development teams. With 6+ years of experience in Python, GraphQL, React, TypeScript, 
                 and AWS, I can help bring your project to life.
               </p>
               <div className="flex flex-wrap justify-center gap-3">

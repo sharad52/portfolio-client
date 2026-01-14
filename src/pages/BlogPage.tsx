@@ -30,7 +30,7 @@ export const BlogPage: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Blog | Developer Portfolio</title>
+        <title>Blog | Sharad Bhandari</title>
         <meta name="description" content="Read my latest articles about web development, programming, and technology." />
       </Helmet>
 

@@ -30,7 +30,7 @@ export const ProjectsPage: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Projects | Developer Portfolio</title>
+        <title>Projects | Sharad Bhandari</title>
         <meta name="description" content="Check out my portfolio of web development projects" />
       </Helmet>
 
