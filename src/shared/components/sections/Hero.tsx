@@ -190,6 +190,26 @@ export const Hero: React.FC = () => {
             </h3>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {/* Backend */}
+              <div className="text-center">
+                <div className="mb-3">
+                  <span className="font-body text-sm text-accent-dark font-bold uppercase tracking-wider">
+                    Backend
+                  </span>
+                </div>
+                <div className="space-y-2">
+                  <div className="px-4 py-2 bg-accent/10 border-2 border-ink font-mono text-sm">
+                    Python / FastAPI
+                  </div>
+                  <div className="px-4 py-2 bg-accent/10 border-2 border-ink font-mono text-sm">
+                    C / C++
+                  </div>
+                  <div className="px-4 py-2 bg-accent/10 border-2 border-ink font-mono text-sm">
+                    GraphQL
+                  </div>
+                </div>
+              </div>
+
               {/* Frontend */}
               <div className="text-center">
                 <div className="mb-3">
@@ -206,26 +226,6 @@ export const Hero: React.FC = () => {
                   </div>
                   <div className="px-4 py-2 bg-accent/10 border-2 border-ink font-mono text-sm">
                     Tailwind CSS
-                  </div>
-                </div>
-              </div>
-
-              {/* Backend */}
-              <div className="text-center">
-                <div className="mb-3">
-                  <span className="font-body text-sm text-accent-dark font-bold uppercase tracking-wider">
-                    Backend
-                  </span>
-                </div>
-                <div className="space-y-2">
-                  <div className="px-4 py-2 bg-accent/10 border-2 border-ink font-mono text-sm">
-                    Node.js
-                  </div>
-                  <div className="px-4 py-2 bg-accent/10 border-2 border-ink font-mono text-sm">
-                    Express
-                  </div>
-                  <div className="px-4 py-2 bg-accent/10 border-2 border-ink font-mono text-sm">
-                    GraphQL
                   </div>
                 </div>
               </div>
@@ -275,7 +275,7 @@ export const Hero: React.FC = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 pt-8 border-t-2 border-ink">
               <div className="text-center">
                 <div className="font-display text-4xl font-bold text-accent-dark mb-1">
-                  8+
+                  6+
                 </div>
                 <div className="font-body text-sm text-ink/70">
                   Years Experience

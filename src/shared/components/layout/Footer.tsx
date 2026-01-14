@@ -9,7 +9,7 @@ export const Footer: React.FC = () => {
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="text-center md:text-left">
             <p className="font-body">
-              © {new Date().getFullYear()} Personal Portfolio. All rights reserved.
+              © {new Date().getFullYear()} Sharad Bhandari
             </p>
           </div>
 
