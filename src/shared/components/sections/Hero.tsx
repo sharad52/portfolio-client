@@ -62,7 +62,7 @@ export const Hero: React.FC = () => {
                 </h2>
                 <p className="font-body text-lg md:text-xl text-ink/80 leading-relaxed mb-4">
                   Specializing in building scalable web applications with{' '}
-                  <span className="font-bold text-accent-dark">React, Node.js, and TypeScript</span>.
+                  <span className="font-bold text-accent-dark">Python, React, and TypeScript</span>.
                   Passionate about clean code, system architecture, and delivering exceptional user experiences.
                 </p>
                 
