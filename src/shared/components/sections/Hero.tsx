@@ -283,7 +283,7 @@ export const Hero: React.FC = () => {
               </div>
               <div className="text-center">
                 <div className="font-display text-4xl font-bold text-accent-dark mb-1">
-                  20+
+                  15+
                 </div>
                 <div className="font-body text-sm text-ink/70">
                   Projects Delivered
