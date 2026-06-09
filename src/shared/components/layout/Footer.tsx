@@ -1,50 +1,75 @@
 import React from 'react';
-import { Github, Linkedin, Twitter, Mail } from 'lucide-react';
-import { SOCIAL_LINKS } from '@/shared/constants';
+import { Link } from 'react-router-dom';
+import { ArrowUpRight } from 'lucide-react';
+import { navItems, profile, socials } from '@/content/site';
+import { Icon } from '@/shared/components/ui';
 
 export const Footer: React.FC = () => {
+  const year = new Date().getFullYear();
   return (
-    <footer className="bg-ink text-cream py-8 mt-auto">
-      <div className="container mx-auto px-6">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="text-center md:text-left">
-            <p className="font-body">
-              © {new Date().getFullYear()} Sharad Bhandari
+    <footer className="relative mt-24 border-t border-line">
+      <div className="mx-auto max-w-6xl px-6 py-16">
+        <div className="grid gap-12 md:grid-cols-[1.4fr_1fr_1fr]">
+          {/* Brand + pitch */}
+          <div>
+            <Link to="/" className="flex items-center gap-3">
+              <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-accent via-accent-indigo to-accent-cyan font-display text-sm font-bold text-white">
+                {profile.initials}
+              </span>
+              <span className="font-display text-base font-semibold text-fg">{profile.name}</span>
+            </Link>
+            <p className="mt-5 max-w-sm text-sm leading-relaxed text-fg-muted">
+              {profile.tagline}
             </p>
+            <div className="mt-6 flex gap-3">
+              {socials.map((s) => (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  target={s.href.startsWith('http') ? '_blank' : undefined}
+                  rel="noopener noreferrer"
+                  aria-label={s.label}
+                  className="grid h-10 w-10 place-items-center rounded-full border border-line bg-white/[0.03] text-fg-muted transition-colors hover:border-white/25 hover:text-fg"
+                >
+                  <Icon name={s.icon} size={18} />
+                </a>
+              ))}
+            </div>
           </div>
 
-          <div className="flex gap-6">
-            <a
-              href={SOCIAL_LINKS.GITHUB}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-accent transition-colors"
-            >
-              <Github size={24} />
-            </a>
-            <a
-              href={SOCIAL_LINKS.LINKEDIN}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-accent transition-colors"
-            >
-              <Linkedin size={24} />
-            </a>
-            <a
-              href={SOCIAL_LINKS.TWITTER}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-accent transition-colors"
-            >
-              <Twitter size={24} />
-            </a>
-            <a
-              href={SOCIAL_LINKS.EMAIL}
-              className="hover:text-accent transition-colors"
-            >
-              <Mail size={24} />
-            </a>
+          {/* Nav */}
+          <div>
+            <h3 className="mb-4 font-mono text-xs uppercase tracking-widest text-fg-faint">Navigate</h3>
+            <ul className="space-y-3">
+              {navItems.map((item) => (
+                <li key={item.path}>
+                  <Link to={item.path} className="text-sm text-fg-muted transition-colors hover:text-fg">
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
+
+          {/* Contact */}
+          <div>
+            <h3 className="mb-4 font-mono text-xs uppercase tracking-widest text-fg-faint">Get in touch</h3>
+            <ul className="space-y-3 text-sm">
+              <li>
+                <a href={`mailto:${profile.email}`} className="group inline-flex items-center gap-1 text-fg-muted transition-colors hover:text-fg">
+                  {profile.email}
+                  <ArrowUpRight size={14} className="opacity-0 transition-opacity group-hover:opacity-100" />
+                </a>
+              </li>
+              <li className="text-fg-muted">{profile.phone}</li>
+              <li className="text-fg-muted">{profile.location}</li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-line pt-8 text-xs text-fg-faint md:flex-row">
+          <p>© {year} {profile.name}. All rights reserved.</p>
+          <p className="font-mono">Built with React · Tailwind · Framer Motion</p>
         </div>
       </div>
     </footer>
