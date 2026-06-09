@@ -98,52 +98,32 @@ apiClient.interceptors.response.use(
 export const api = {
   // GET request
   get: async <T = any>(url: string, config?: AxiosRequestConfig): Promise<T> => {
-    try {
-      const response = await apiClient.get<T>(url, config);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.get<T>(url, config);
+    return response.data;
   },
 
   // POST request
   post: async <T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> => {
-    try {
-      const response = await apiClient.post<T>(url, data, config);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.post<T>(url, data, config);
+    return response.data;
   },
 
   // PUT request
   put: async <T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> => {
-    try {
-      const response = await apiClient.put<T>(url, data, config);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.put<T>(url, data, config);
+    return response.data;
   },
 
   // DELETE request
   delete: async <T = any>(url: string, config?: AxiosRequestConfig): Promise<T> => {
-    try {
-      const response = await apiClient.delete<T>(url, config);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.delete<T>(url, config);
+    return response.data;
   },
 
   // PATCH request
   patch: async <T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> => {
-    try {
-      const response = await apiClient.patch<T>(url, data, config);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await apiClient.patch<T>(url, data, config);
+    return response.data;
   },
 };
 
