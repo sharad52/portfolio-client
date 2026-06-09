@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Navigate } from 'react-router-dom';
+import { useParams, Navigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, ArrowLeft } from 'lucide-react';
+import { Calendar, Clock, ArrowLeft, Loader2 } from 'lucide-react';
 import Markdown from 'markdown-to-jsx';
 import { Helmet } from 'react-helmet-async';
 import { BlogService } from '@/features/blog/services/blogService';
 import { BlogPost } from '@/features/blog/types';
 import { formatDate } from '@/shared/utils/helpers';
 import { ROUTES } from '@/core/routes';
-import { Link } from 'react-router-dom';
+import { AuroraBackground } from '@/shared/components/ui';
 
 export const BlogPostPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -17,9 +17,8 @@ export const BlogPostPage: React.FC = () => {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    const loadPost = async () => {
+    (async () => {
       if (!slug) return;
-      
       try {
         setLoading(true);
         const data = await BlogService.getPostBySlug(slug);
@@ -31,129 +30,67 @@ export const BlogPostPage: React.FC = () => {
       } finally {
         setLoading(false);
       }
-    };
-
-    loadPost();
+    })();
   }, [slug]);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-cream flex justify-center items-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-accent border-t-transparent" />
+      <div className="flex min-h-screen items-center justify-center text-fg-muted">
+        <Loader2 className="animate-spin" size={28} />
       </div>
     );
   }
-
-  if (error || !post) {
-    return <Navigate to={ROUTES.BLOG} replace />;
-  }
+  if (error || !post) return <Navigate to={ROUTES.BLOG} replace />;
 
   return (
     <>
       <Helmet>
-        <title>{post.title} | Blog</title>
+        <title>{post.title} — Sharad Bhandari</title>
         <meta name="description" content={post.excerpt} />
-        {post.seo?.keywords && (
-          <meta name="keywords" content={post.seo.keywords.join(', ')} />
-        )}
       </Helmet>
 
-      <article className="min-h-screen bg-cream py-24">
-        <div className="container mx-auto px-6 max-w-4xl">
-          <Link
-            to={ROUTES.BLOG}
-            className="inline-flex items-center gap-2 text-ink hover:text-accent transition-colors mb-8 font-body"
-          >
-            <ArrowLeft size={20} />
-            Back to Blog
+      <div className="relative pt-32">
+        <AuroraBackground />
+        <article className="mx-auto max-w-3xl px-6 pb-24">
+          <Link to={ROUTES.BLOG} className="mb-10 inline-flex items-center gap-2 text-sm text-fg-muted transition-colors hover:text-fg">
+            <ArrowLeft size={18} /> Back to writing
           </Link>
 
-          <motion.header
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-12"
-          >
-            <div className="mb-6">
-              <span className="inline-block px-4 py-2 bg-accent/20 text-ink font-mono text-sm mb-4">
-                {post.category.name}
-              </span>
-            </div>
-
-            <h1 className="font-display text-5xl md:text-6xl font-bold text-ink mb-6">
+          <motion.header initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+            <span className="chip mb-5">{post.category.name}</span>
+            <h1 className="font-display text-4xl font-semibold leading-tight tracking-tight text-fg md:text-5xl">
               {post.title}
             </h1>
-
-            <div className="flex flex-wrap items-center gap-6 text-ink/60 mb-6">
-              <span className="flex items-center gap-2">
-                <Calendar size={18} />
-                {post.publishedAt && formatDate(post.publishedAt)}
-              </span>
-              <span className="flex items-center gap-2">
-                <Clock size={18} />
-                {post.readingTime} min read
-              </span>
-            </div>
-
-            <div className="flex items-center gap-4 mb-6">
-              {post.author.avatar && (
-                <img
-                  src={post.author.avatar}
-                  alt={post.author.name}
-                  className="w-12 h-12 rounded-full border-2 border-ink"
-                />
-              )}
-              <div>
-                <p className="font-body text-lg font-semibold text-ink">
-                  {post.author.name}
-                </p>
-                {post.author.bio && (
-                  <p className="text-sm text-ink/60">{post.author.bio}</p>
-                )}
-              </div>
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              {post.tags.map((tag) => (
-                <span
-                  key={tag.id}
-                  className="px-3 py-1 bg-ink text-cream text-sm font-mono"
-                >
-                  #{tag.name}
-                </span>
-              ))}
+            <div className="mt-6 flex flex-wrap items-center gap-5 text-sm text-fg-faint">
+              <span className="inline-flex items-center gap-1.5"><Calendar size={15} />{post.publishedAt && formatDate(post.publishedAt)}</span>
+              <span className="inline-flex items-center gap-1.5"><Clock size={15} />{post.readingTime} min read</span>
             </div>
           </motion.header>
 
           {post.coverImage && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
+            <motion.img
+              initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="mb-12 border-4 border-ink shadow-[16px_16px_0px_0px_rgba(15,15,15,1)]"
-            >
-              <img
-                src={post.coverImage}
-                alt={post.title}
-                className="w-full h-auto"
-              />
-            </motion.div>
+              transition={{ duration: 0.6, delay: 0.1 }}
+              src={post.coverImage}
+              alt={post.title}
+              className="mt-10 w-full rounded-3xl border border-line"
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+            />
           )}
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="prose prose-lg max-w-none font-body text-ink
-              prose-headings:font-display prose-headings:text-ink
-              prose-a:text-accent-dark prose-a:no-underline hover:prose-a:underline
-              prose-code:bg-accent/10 prose-code:px-2 prose-code:py-1 prose-code:rounded
-              prose-pre:bg-ink prose-pre:text-cream prose-pre:border-2 prose-pre:border-ink
-              prose-blockquote:border-l-4 prose-blockquote:border-accent prose-blockquote:pl-4
-              prose-img:border-2 prose-img:border-ink"
+          <div
+            className="prose prose-invert mt-12 max-w-none
+              prose-headings:font-display prose-headings:tracking-tight
+              prose-a:text-accent-cyan prose-a:no-underline hover:prose-a:underline
+              prose-code:rounded prose-code:bg-white/10 prose-code:px-1.5 prose-code:py-0.5
+              prose-pre:rounded-2xl prose-pre:border prose-pre:border-line prose-pre:bg-black/40
+              prose-blockquote:border-l-accent prose-strong:text-fg prose-p:text-fg-muted prose-li:text-fg-muted"
           >
             <Markdown>{post.content}</Markdown>
-          </motion.div>
-        </div>
-      </article>
+          </div>
+        </article>
+      </div>
     </>
   );
 };

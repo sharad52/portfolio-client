@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { Helmet } from 'react-helmet-async';
+import { Loader2, PenLine } from 'lucide-react';
 import { BlogCard } from '@/features/blog/components/BlogCard';
 import { BlogService } from '@/features/blog/services/blogService';
 import { BlogPost } from '@/features/blog/types';
-import { Helmet } from 'react-helmet-async';
+import { AuroraBackground, Section, SectionHeading } from '@/shared/components/ui';
 
 export const BlogPage: React.FC = () => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -11,65 +12,55 @@ export const BlogPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const loadPosts = async () => {
+    (async () => {
       try {
         setLoading(true);
-        const response = await BlogService.getPosts({ page: 1, limit: 10 });
-        setPosts(response.data);
+        const res = await BlogService.getPosts({ page: 1, limit: 12 });
+        setPosts(res.data);
       } catch (err) {
-        setError('Failed to load blog posts');
+        setError('Failed to load posts');
         console.error(err);
       } finally {
         setLoading(false);
       }
-    };
-
-    loadPosts();
+    })();
   }, []);
 
   return (
     <>
       <Helmet>
-        <title>Blog | Developer Portfolio</title>
-        <meta name="description" content="Read my latest articles about web development, programming, and technology." />
+        <title>Writing — Sharad Bhandari</title>
+        <meta name="description" content="Articles and notes on software engineering, architecture, and building for the web." />
       </Helmet>
 
-      <div className="min-h-screen bg-cream py-24">
-        <div className="container mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-16"
-          >
-            <h1 className="font-display text-6xl md:text-7xl font-bold text-ink mb-4">
-              Blog
-            </h1>
-            <div className="h-1 w-32 bg-accent mb-6" />
-            <p className="font-body text-xl text-ink/70 max-w-2xl">
-              Thoughts, tutorials, and insights about web development and technology.
-            </p>
-          </motion.div>
+      <div className="relative pt-32">
+        <AuroraBackground />
+        <Section className="pt-0">
+          <SectionHeading
+            eyebrow="Writing"
+            title={<>Notes & <span className="gradient-text">articles</span></>}
+            intro="Thoughts on architecture, engineering practice, and lessons from shipping real systems."
+          />
 
           {loading ? (
-            <div className="flex justify-center items-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-4 border-accent border-t-transparent" />
+            <div className="flex justify-center py-24 text-fg-muted">
+              <Loader2 className="animate-spin" size={28} />
             </div>
           ) : error ? (
-            <div className="text-center py-20">
-              <p className="text-xl text-red-600">{error}</p>
-            </div>
+            <p className="py-24 text-center text-red-300">{error}</p>
           ) : posts.length === 0 ? (
-            <div className="text-center py-20">
-              <p className="text-xl text-ink/60">No blog posts yet. Check back soon!</p>
+            <div className="flex flex-col items-center gap-4 rounded-3xl border border-line bg-white/[0.03] py-24 text-center backdrop-blur-xl">
+              <PenLine className="text-accent-cyan" size={32} />
+              <p className="text-lg text-fg-muted">Articles are on the way. Check back soon.</p>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {posts.map((post) => (
-                <BlogCard key={post.id} post={post} />
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {posts.map((post, i) => (
+                <BlogCard key={post.id} post={post} index={i} />
               ))}
             </div>
           )}
-        </div>
+        </Section>
       </div>
     </>
   );
