@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, ArrowRight } from 'lucide-react';
+import { Calendar, Clock, ArrowUpRight } from 'lucide-react';
 import { BlogPost } from '../types';
 import { formatDate } from '@/shared/utils/helpers';
 import { createBlogPostRoute } from '@/core/routes';
@@ -8,84 +8,52 @@ import { Link } from 'react-router-dom';
 
 interface BlogCardProps {
   post: BlogPost;
-  featured?: boolean;
+  index?: number;
 }
 
-export const BlogCard: React.FC<BlogCardProps> = ({ post, featured = false }) => {
-  return (
-    <motion.article
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      className={`bg-cream border-2 border-ink ${
-        featured 
-          ? 'p-8 shadow-[12px_12px_0px_0px_rgba(15,15,15,1)]' 
-          : 'p-6 shadow-[8px_8px_0px_0px_rgba(15,15,15,1)]'
-      } hover:shadow-[16px_16px_0px_0px_rgba(15,15,15,1)] transition-all duration-300`}
-    >
-      {post.coverImage && (
-        <div className="mb-6 overflow-hidden border-2 border-ink">
-          <img
-            src={post.coverImage}
-            alt={post.title}
-            className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
-          />
-        </div>
-      )}
+export const BlogCard: React.FC<BlogCardProps> = ({ post, index = 0 }) => (
+  <motion.article
+    initial={{ opacity: 0, y: 24 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: '-60px' }}
+    transition={{ duration: 0.6, delay: index * 0.08 }}
+    whileHover={{ y: -6 }}
+    className="group flex h-full flex-col overflow-hidden rounded-3xl border border-line bg-white/[0.03] backdrop-blur-xl transition-colors hover:border-white/20"
+  >
+    {post.coverImage && (
+      <div className="overflow-hidden border-b border-line">
+        <img
+          src={post.coverImage}
+          alt={post.title}
+          className="h-44 w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          onError={(e) => { e.currentTarget.parentElement!.style.display = 'none'; }}
+        />
+      </div>
+    )}
 
-      <div className="flex items-center gap-4 mb-4 text-sm text-ink/60">
-        <span className="flex items-center gap-2">
-          <Calendar size={16} />
-          {post.publishedAt && formatDate(post.publishedAt)}
-        </span>
-        <span className="flex items-center gap-2">
-          <Clock size={16} />
-          {post.readingTime} min read
-        </span>
+    <div className="flex flex-grow flex-col p-7">
+      <div className="mb-4 flex items-center gap-4 text-xs text-fg-faint">
+        <span className="inline-flex items-center gap-1.5"><Calendar size={14} />{post.publishedAt && formatDate(post.publishedAt)}</span>
+        <span className="inline-flex items-center gap-1.5"><Clock size={14} />{post.readingTime} min</span>
       </div>
 
-      <div className="mb-4">
-        <span className="inline-block px-3 py-1 bg-accent/20 text-ink font-mono text-sm mb-3">
-          {post.category.name}
-        </span>
-      </div>
+      <span className="chip mb-3 w-fit">{post.category.name}</span>
 
-      <h3 className={`font-display font-bold text-ink mb-3 ${
-        featured ? 'text-3xl' : 'text-2xl'
-      }`}>
-        <Link
-          to={createBlogPostRoute(post.slug)}
-          className="hover:text-accent transition-colors"
-        >
+      <h3 className="font-display text-xl font-semibold text-fg">
+        <Link to={createBlogPostRoute(post.slug)} className="transition-colors hover:text-accent-cyan">
           {post.title}
         </Link>
       </h3>
 
-      <p className="font-body text-lg text-ink/70 mb-4 line-clamp-3">
-        {post.excerpt}
-      </p>
-
-      <div className="flex flex-wrap gap-2 mb-6">
-        {post.tags.slice(0, 3).map((tag) => (
-          <span
-            key={tag.id}
-            className="px-2 py-1 bg-ink text-cream text-sm font-mono"
-          >
-            #{tag.name}
-          </span>
-        ))}
-      </div>
+      <p className="mt-3 flex-grow text-sm leading-relaxed text-fg-muted line-clamp-3">{post.excerpt}</p>
 
       <Link
         to={createBlogPostRoute(post.slug)}
-        className="inline-flex items-center gap-2 text-ink hover:text-accent transition-colors font-body text-lg group"
+        className="group/link mt-6 inline-flex items-center gap-1 text-sm text-accent-cyan"
       >
-        Read More
-        <ArrowRight
-          size={20}
-          className="group-hover:translate-x-1 transition-transform"
-        />
+        Read article
+        <ArrowUpRight size={15} className="transition-transform group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5" />
       </Link>
-    </motion.article>
-  );
-};
+    </div>
+  </motion.article>
+);
