@@ -1,9 +1,10 @@
-//import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
+import { useEffect } from 'react';
 import { ROUTES } from '@/core/routes';
 import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
 import { useGlobalErrorHandler } from '@/shared/utils/errorHandler';
+import { ScrollProgress } from '@/shared/components/ui';
 
 // Layout
 import { Header } from '@/shared/components/layout/Header';
@@ -19,13 +20,22 @@ import { ContactPage } from '@/pages/ContactPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 import { ServerErrorPage } from '@/pages/ServerErrorPage';
 
-// Inner App component to use hooks
+/** Scroll to top on every route change. */
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+  }, [pathname]);
+  return null;
+}
+
 function AppContent() {
-  // Global error handler - catches unhandled promise rejections
   useGlobalErrorHandler();
 
   return (
-    <div className="min-h-screen bg-cream flex flex-col">
+    <div className="flex min-h-screen flex-col overflow-x-hidden bg-base text-fg">
+      <ScrollProgress />
+      <ScrollToTop />
       <Header />
       <main className="flex-grow">
         <Routes>
@@ -35,10 +45,8 @@ function AppContent() {
           <Route path={ROUTES.PROJECTS} element={<ProjectsPage />} />
           <Route path={ROUTES.EXPERIENCE} element={<ExperiencePage />} />
           <Route path={ROUTES.CONTACT} element={<ContactPage />} />
-          {/* Error pages - must come before catch-all */}
           <Route path="/error" element={<ServerErrorPage />} />
           <Route path="/500" element={<ServerErrorPage />} />
-          {/* 404 catch-all - must be LAST */}
           <Route path={ROUTES.NOT_FOUND} element={<NotFoundPage />} />
         </Routes>
       </main>
