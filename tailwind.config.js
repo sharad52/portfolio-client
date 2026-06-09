@@ -7,15 +7,83 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        'display': ['Playfair Display', 'serif'],
-        'body': ['Crimson Pro', 'serif'],
-        'mono': ['JetBrains Mono', 'monospace'],
+        // Modern, technical-elegant display + clean body + mono
+        'display': ['"Space Grotesk"', 'system-ui', 'sans-serif'],
+        'body': ['Inter', 'system-ui', 'sans-serif'],
+        'mono': ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
       },
       colors: {
-        'ink': '#0f0f0f',
-        'cream': '#faf8f4',
-        'accent': '#c9a96e',
-        'accent-dark': '#8b6f47',
+        // Desaturated slate blue-grey canvas (Artoo palette) — lighter & airier
+        base: {
+          DEFAULT: '#3a484e',
+          900: '#2e3c41', // deepest slate (edges)
+          800: '#36444a',
+          700: '#415157',
+          600: '#4b5b61',
+        },
+        // Glass surfaces / hairline borders are handled via utilities
+        ink: '#3a484e',          // kept for legacy refs; the slate canvas
+        cream: '#eef1f1',        // kept for legacy refs; near-white text
+        line: 'rgba(255,255,255,0.08)',
+        // Foreground text — soft, low-contrast (never pure white)
+        fg: {
+          DEFAULT: '#e8edee',
+          muted: '#a7b2b4',
+          faint: '#7e8c8f',
+        },
+        // Muted steel accent ramp (kept within the slate family)
+        accent: {
+          DEFAULT: '#88adb5',
+          dark: '#5e8087',
+          cyan: '#a7c7cd',
+          fuchsia: '#b3a7ad',
+          indigo: '#7d97a0',
+        },
+      },
+      backgroundImage: {
+        'grid': 'linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px)',
+        'aurora': 'radial-gradient(at 27% 37%, #4a5e64 0px, transparent 50%), radial-gradient(at 78% 25%, #5e8087 0px, transparent 50%), radial-gradient(at 45% 75%, #3e4f54 0px, transparent 50%)',
+        'sheen': 'linear-gradient(110deg, transparent 35%, rgba(255,255,255,0.12) 50%, transparent 65%)',
+      },
+      boxShadow: {
+        'glow': '0 0 0 1px rgba(255,255,255,0.06), 0 20px 60px -20px rgba(94,128,135,0.55)',
+        'glow-cyan': '0 0 0 1px rgba(255,255,255,0.06), 0 20px 60px -20px rgba(167,199,205,0.45)',
+        'card': '0 1px 0 0 rgba(255,255,255,0.06) inset, 0 20px 40px -24px rgba(0,0,0,0.55)',
+      },
+      keyframes: {
+        'aurora-shift': {
+          '0%, 100%': { transform: 'translate3d(0,0,0) scale(1)' },
+          '33%': { transform: 'translate3d(4%, -3%, 0) scale(1.08)' },
+          '66%': { transform: 'translate3d(-3%, 4%, 0) scale(0.96)' },
+        },
+        'float': {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-12px)' },
+        },
+        'shimmer': {
+          '0%': { backgroundPosition: '200% 0' },
+          '100%': { backgroundPosition: '-200% 0' },
+        },
+        'gradient-pan': {
+          '0%, 100%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+        },
+        'marquee': {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
+        'pulse-ring': {
+          '0%': { transform: 'scale(0.9)', opacity: '0.7' },
+          '100%': { transform: 'scale(2.2)', opacity: '0' },
+        },
+      },
+      animation: {
+        'aurora-shift': 'aurora-shift 18s ease-in-out infinite',
+        'float': 'float 6s ease-in-out infinite',
+        'shimmer': 'shimmer 2.5s linear infinite',
+        'gradient-pan': 'gradient-pan 6s ease infinite',
+        'marquee': 'marquee 32s linear infinite',
+        'pulse-ring': 'pulse-ring 2.4s cubic-bezier(0.2,0.6,0.4,1) infinite',
       },
     },
   },

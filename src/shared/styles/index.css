@@ -1,36 +1,97 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Crimson+Pro:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  * {
-    @apply scroll-smooth;
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 96px;
   }
 
   body {
-    @apply font-body text-ink bg-cream antialiased;
+    @apply font-body bg-base text-fg antialiased;
+    /* soft "lit panel": gently lighter at top-centre, darker toward the edges */
+    background-image:
+      radial-gradient(75rem 48rem at 50% -6%, rgba(255, 255, 255, 0.06), transparent 60%),
+      radial-gradient(90rem 70rem at 50% 120%, rgba(0, 0, 0, 0.28), transparent 60%);
+    background-attachment: fixed;
   }
 
   ::selection {
-    @apply bg-accent text-ink;
+    background: rgba(136, 173, 181, 0.40);
+    color: #fff;
+  }
+
+  /* Respect users who prefer less motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 
-/* Custom scrollbar */
+@layer components {
+  /* Glass surface — the core card treatment */
+  .glass {
+    @apply border border-line bg-white/[0.03] backdrop-blur-xl;
+  }
+
+  .glass-strong {
+    @apply border border-line bg-white/[0.05] backdrop-blur-2xl;
+  }
+
+  /* Subtle near-white sheen clipped to text — low chroma, elegant (no rainbow) */
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(110deg, #f4f7f7 0%, #cdd9da 55%, #aec6ca 100%);
+    background-size: 200% auto;
+  }
+
+  .gradient-text-animated {
+    @apply gradient-text animate-gradient-pan;
+  }
+
+  /* Thin gradient hairline used as a section rule */
+  .rule {
+    @apply h-px w-full;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+  }
+
+  /* Pill / chip */
+  .chip {
+    @apply inline-flex items-center gap-2 rounded-full border border-line bg-white/[0.04] px-3 py-1 font-mono text-xs text-fg-muted;
+  }
+
+  /* Primary button — flat, understated muted steel like the reference */
+  .btn-primary {
+    @apply relative inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 px-7 py-3 font-normal text-white transition-colors duration-300;
+    background-color: rgba(136, 173, 181, 0.16);
+  }
+  .btn-primary:hover { background-color: rgba(136, 173, 181, 0.26); }
+
+  /* Ghost / outline button */
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-line bg-white/[0.02] px-7 py-3 font-normal text-fg transition-colors duration-300 hover:border-white/20 hover:bg-white/[0.06];
+  }
+}
+
+/* Custom dark scrollbar */
 ::-webkit-scrollbar {
-  width: 12px;
+  width: 11px;
 }
-
 ::-webkit-scrollbar-track {
-  @apply bg-cream;
+  background: #283438;
 }
-
 ::-webkit-scrollbar-thumb {
-  @apply bg-accent border-2 border-cream;
+  background: rgba(136, 173, 181, 0.40);
+  border-radius: 999px;
+  border: 2px solid #283438;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-accent-dark;
+  background: rgba(136, 173, 181, 0.65);
 }
