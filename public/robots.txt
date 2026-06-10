@@ -1,0 +1,9 @@
+# Allow all crawlers full access
+User-agent: *
+Allow: /
+
+# Explicitly welcome image crawlers (helps your photo appear in search)
+User-agent: Googlebot-Image
+Allow: /
+
+Sitemap: https://sharadbhandari.com.np/sitemap.xml
