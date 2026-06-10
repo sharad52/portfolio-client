@@ -299,6 +299,8 @@ export const interests = [
 
 export const seo = {
   siteUrl: 'https://sharadbhandari.com.np',
-  defaultTitle: `${profile.name} — ${profile.role}`,
-  defaultDescription: profile.tagline,
+  defaultTitle: `${profile.name} — ${profile.role} | Developer in Nepal`,
+  defaultDescription:
+    'Sharad Bhandari (Er Sharad Bhandari) — Senior Software Engineer and backend developer based in Kathmandu, Nepal. 7+ years building scalable, cloud-ready systems, APIs and async architectures. Available worldwide.',
+  ogImage: 'https://sharadbhandari.com.np/images/profile.jpeg',
 } as const;

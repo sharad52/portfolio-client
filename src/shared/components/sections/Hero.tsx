@@ -138,7 +138,11 @@ export const Hero: React.FC = () => {
             <div className="relative overflow-hidden rounded-[1.6rem]">
               <img
                 src="/images/profile.jpeg"
-                alt={profile.name}
+                alt={`${profile.name} — ${profile.role} based in ${profile.location}`}
+                width={2212}
+                height={3839}
+                loading="eager"
+                fetchPriority="high"
                 className="aspect-[4/5] w-full object-cover"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';
