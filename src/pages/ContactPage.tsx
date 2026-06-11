@@ -151,7 +151,7 @@ export const ContactPage: React.FC = () => {
                     animate={{ opacity: 1, scale: 1 }}
                     className="flex flex-col items-center justify-center py-16 text-center"
                   >
-                    <span className="mb-5 grid h-16 w-16 place-items-center rounded-full bg-gradient-to-br from-accent to-accent-cyan text-white">
+                    <span className="mb-5 grid h-16 w-16 place-items-center rounded-full bg-gradient-to-br from-accent to-accent-dark text-fg">
                       <CheckCircle2 size={32} />
                     </span>
                     <h3 className="font-display text-2xl font-semibold text-fg">Message on its way</h3>
@@ -209,7 +209,10 @@ export const ContactPage: React.FC = () => {
                         <MessageCircle size={16} /> Or WhatsApp
                       </a>
                     </div>
-                    <p className="text-xs text-fg-faint">* Required. No data is stored on this site.</p>
+                    <p className="text-xs text-fg-faint">
+                      * Required. Your message is emailed directly to me — nothing is stored on this site.
+                      Your approximate location (city-level, from your IP) is included to help me respond.
+                    </p>
                   </form>
                 )}
               </div>
