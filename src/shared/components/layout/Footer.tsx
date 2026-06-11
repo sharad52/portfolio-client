@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowUpRight } from 'lucide-react';
 import { navItems, profile, socials } from '@/content/site';
 import { Icon } from '@/shared/components/ui';
+import { Brand } from './Brand';
 
 export const Footer: React.FC = () => {
   const year = new Date().getFullYear();
@@ -12,12 +13,7 @@ export const Footer: React.FC = () => {
         <div className="grid gap-12 md:grid-cols-[1.4fr_1fr_1fr]">
           {/* Brand + pitch */}
           <div>
-            <Link to="/" className="flex items-center gap-3">
-              <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-accent via-accent-indigo to-accent-cyan font-display text-sm font-bold text-white">
-                {profile.initials}
-              </span>
-              <span className="font-display text-base font-semibold text-fg">{profile.name}</span>
-            </Link>
+            <Brand />
             <p className="mt-5 max-w-sm text-sm leading-relaxed text-fg-muted">
               {profile.tagline}
             </p>
