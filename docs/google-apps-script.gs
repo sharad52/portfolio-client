@@ -14,8 +14,11 @@ function doPost(e) {
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
 
     // Write a header row the first time.
+    // NOTE: if your sheet already has data, this block is skipped — add two
+    // columns named "Location" and "IP" to the end of your existing header row
+    // by hand so the new fields line up.
     if (sheet.getLastRow() === 0) {
-      sheet.appendRow(['Timestamp', 'Name', 'Email', 'Phone', 'Subject', 'Message', 'Source']);
+      sheet.appendRow(['Timestamp', 'Name', 'Email', 'Phone', 'Subject', 'Message', 'Location', 'IP', 'Source']);
     }
 
     sheet.appendRow([
@@ -25,6 +28,8 @@ function doPost(e) {
       data.phone || '',
       data.subject || '',
       data.message || '',
+      data.location || '',
+      data.ip || '',
       data.source || '',
     ]);
 
@@ -37,7 +42,9 @@ function doPost(e) {
           'Name: ' + (data.name || '') + '\n' +
           'Email: ' + (data.email || '') + '\n' +
           'Phone: ' + (data.phone || '') + '\n' +
-          'Subject: ' + (data.subject || '') + '\n\n' +
+          'Subject: ' + (data.subject || '') + '\n' +
+          'Location: ' + (data.location || 'Unknown') + '\n' +
+          'IP: ' + (data.ip || '') + '\n\n' +
           (data.message || ''),
       });
     }
