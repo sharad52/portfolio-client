@@ -19,6 +19,32 @@ const WHATSAPP_NUMBER = (import.meta.env.VITE_WHATSAPP_NUMBER as string) || prof
 const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY as string | undefined;
 const GOOGLE_SCRIPT_URL = import.meta.env.VITE_GOOGLE_SCRIPT_URL as string | undefined;
 
+// ── Book a meeting ──────────────────────────────────────────────────
+// Google Calendar address visitors are scheduled with (falls back to the
+// site's contact email), and an optional public "appointment schedule" link.
+const CALENDAR_EMAIL = (import.meta.env.VITE_CALENDAR_EMAIL as string) || profile.email;
+const BOOKING_URL = import.meta.env.VITE_BOOKING_URL as string | undefined;
+
+/**
+ * Build a "schedule a meeting" link.
+ *  - If a Google Calendar appointment-schedule URL is configured
+ *    (profile.bookingUrl), use it — visitors book a real slot on your calendar.
+ *  - Otherwise fall back to a Google Calendar event template that pre-invites
+ *    your calendar address, so it works with zero setup.
+ */
+export function buildMeetingLink(): string {
+  if (BOOKING_URL) return BOOKING_URL;
+
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: `Meeting with ${profile.name}`,
+    add: CALENDAR_EMAIL,
+    details:
+      'Requested via sharadbhandari.com.np — pick a time that works and send the invite. Looking forward to connecting!',
+  });
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
+
 /** Build a wa.me deep link with an optional prefilled message. */
 export function buildWhatsAppLink(message?: string): string {
   const base = `https://wa.me/${WHATSAPP_NUMBER}`;
@@ -144,5 +170,6 @@ export const ContactService = {
   submitContact,
   buildWhatsAppLink,
   whatsAppFromForm,
+  buildMeetingLink,
   isFormConfigured,
 };

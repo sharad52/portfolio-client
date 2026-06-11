@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, CalendarClock } from 'lucide-react';
 import { navItems } from '@/content/site';
+import { buildMeetingLink } from '@/features/contact/services/contactService';
 import { Brand } from './Brand';
 
 export const Header: React.FC = () => {
@@ -57,9 +58,14 @@ export const Header: React.FC = () => {
 
         {/* CTA + mobile toggle */}
         <div className="flex items-center gap-2">
-          <Link to="/contact" className="btn-primary hidden text-sm md:inline-flex">
-            Let’s talk
-          </Link>
+          <a
+            href={buildMeetingLink()}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-primary hidden text-sm md:inline-flex"
+          >
+            <CalendarClock size={16} /> Book a call
+          </a>
           <button
             onClick={() => setOpen((v) => !v)}
             className="grid h-10 w-10 place-items-center rounded-full border border-line bg-white/[0.03] text-fg md:hidden"
@@ -91,9 +97,14 @@ export const Header: React.FC = () => {
                 {item.label}
               </Link>
             ))}
-            <Link to="/contact" className="btn-primary mt-2 w-full">
-              Let’s talk
-            </Link>
+            <a
+              href={buildMeetingLink()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-primary mt-2 w-full"
+            >
+              <CalendarClock size={18} /> Book a call
+            </a>
           </motion.nav>
         )}
       </AnimatePresence>

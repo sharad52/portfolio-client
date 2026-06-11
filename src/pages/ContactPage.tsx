@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
-import { Send, Mail, MapPin, Phone, MessageCircle, CheckCircle2, Loader2 } from 'lucide-react';
+import { Send, Mail, MapPin, Phone, MessageCircle, CheckCircle2, Loader2, CalendarClock } from 'lucide-react';
 import {
-  submitContact, whatsAppFromForm, buildWhatsAppLink, isFormConfigured,
+  submitContact, whatsAppFromForm, buildWhatsAppLink, buildMeetingLink, isFormConfigured,
 } from '@/features/contact/services/contactService';
 import type { ContactFormData } from '@/features/contact/types';
 import { profile, socials } from '@/content/site';
@@ -82,17 +82,33 @@ export const ContactPage: React.FC = () => {
                   </p>
                 </div>
 
-                <MagneticButton className="w-full">
-                  <a
-                    href={buildWhatsAppLink(`Hi Sharad, I came across your portfolio and would like to connect.`)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn-primary w-full"
-                    style={{ backgroundImage: 'linear-gradient(110deg,#3f7d68,#4f9a7e 55%,#88adb5)' }}
-                  >
-                    <MessageCircle size={18} /> Message me on WhatsApp
-                  </a>
-                </MagneticButton>
+                <div className="space-y-3">
+                  <MagneticButton className="w-full">
+                    <a
+                      href={buildWhatsAppLink(`Hi Sharad, I came across your portfolio and would like to connect.`)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-primary w-full"
+                      style={{ backgroundImage: 'linear-gradient(110deg,#3f7d68,#4f9a7e 55%,#88adb5)' }}
+                    >
+                      <MessageCircle size={18} /> Message me on WhatsApp
+                    </a>
+                  </MagneticButton>
+
+                  <MagneticButton className="w-full">
+                    <a
+                      href={buildMeetingLink()}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-ghost w-full"
+                    >
+                      <CalendarClock size={18} /> Schedule a meeting
+                    </a>
+                  </MagneticButton>
+                  <p className="text-center text-xs text-fg-faint">
+                    Books a slot on my Google Calendar — pick a time that suits you.
+                  </p>
+                </div>
 
                 <div className="space-y-5">
                   <a href={`mailto:${profile.email}`} className="group flex min-w-0 items-start gap-4">

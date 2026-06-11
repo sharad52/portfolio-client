@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, MessageCircle } from 'lucide-react';
+import { ArrowRight, MessageCircle, CalendarClock } from 'lucide-react';
 import { profile } from '@/content/site';
-import { buildWhatsAppLink } from '@/features/contact/services/contactService';
+import { buildWhatsAppLink, buildMeetingLink } from '@/features/contact/services/contactService';
 import { MagneticButton, Reveal, Section } from '@/shared/components/ui';
 
 export const ContactCTA: React.FC = () => (
@@ -29,6 +29,17 @@ export const ContactCTA: React.FC = () => (
               Start a conversation
               <ArrowRight size={18} />
             </Link>
+          </MagneticButton>
+          <MagneticButton>
+            <a
+              href={buildMeetingLink()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-ghost"
+            >
+              <CalendarClock size={18} />
+              Schedule a meeting
+            </a>
           </MagneticButton>
           <MagneticButton>
             <a
