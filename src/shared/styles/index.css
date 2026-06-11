@@ -12,15 +12,15 @@
 
   body {
     @apply font-body bg-base text-fg antialiased;
-    /* soft "lit panel": gently lighter at top-centre, darker toward the edges */
+    /* "lit panel": centred spotlight behind content + full-edge vignette (matches Artoo reference) */
     background-image:
-      radial-gradient(75rem 48rem at 50% -6%, rgba(255, 255, 255, 0.06), transparent 60%),
-      radial-gradient(90rem 70rem at 50% 120%, rgba(0, 0, 0, 0.28), transparent 60%);
+      radial-gradient(60rem 42rem at 50% 42%, rgba(255, 255, 255, 0.07), transparent 62%),
+      radial-gradient(120% 120% at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.30) 100%);
     background-attachment: fixed;
   }
 
   ::selection {
-    background: rgba(136, 173, 181, 0.40);
+    background: rgba(148, 163, 167, 0.40);
     color: #fff;
   }
 
@@ -67,16 +67,16 @@
     @apply inline-flex items-center gap-2 rounded-full border border-line bg-white/[0.04] px-3 py-1 font-mono text-xs text-fg-muted;
   }
 
-  /* Primary button — flat, understated muted steel like the reference */
+  /* Primary button — flat, understated neutral steel like the reference (no chroma, label off pure-white) */
   .btn-primary {
-    @apply relative inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 px-7 py-3 font-normal text-white transition-colors duration-300;
-    background-color: rgba(136, 173, 181, 0.16);
+    @apply relative inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 px-7 py-3 font-normal text-fg transition-colors duration-300;
+    background-color: rgba(255, 255, 255, 0.07);
   }
-  .btn-primary:hover { background-color: rgba(136, 173, 181, 0.26); }
+  .btn-primary:hover { background-color: rgba(255, 255, 255, 0.12); }
 
   /* Ghost / outline button */
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-line bg-white/[0.02] px-7 py-3 font-normal text-fg transition-colors duration-300 hover:border-white/20 hover:bg-white/[0.06];
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-line bg-white/[0.02] px-7 py-3 font-normal text-fg transition-colors duration-300 hover:border-white/20 hover:bg-white/[0.06];
   }
 }
 
@@ -88,10 +88,10 @@
   background: #283438;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(136, 173, 181, 0.40);
+  background: rgba(148, 163, 167, 0.40);
   border-radius: 999px;
   border: 2px solid #283438;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(136, 173, 181, 0.65);
+  background: rgba(148, 163, 167, 0.65);
 }
