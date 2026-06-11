@@ -16,8 +16,15 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: 24
+          node-version-file: .nvmrc
           cache: npm
+
+      # Pin npm to the exact version that generated package-lock.json.
+      # Node bundles a different npm per release, and npm resolves optional/
+      # native deps differently across versions — the cause of past `npm ci`
+      # lockfile-sync failures. Keep this in step with "packageManager" in package.json.
+      - name: Pin npm
+        run: npm i -g npm@11.6.2
 
       - name: Install dependencies
         run: npm ci
