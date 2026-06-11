@@ -21,7 +21,7 @@ export const ExperienceTimeline: React.FC<{ items: Experience[] }> = ({ items })
           {/* node */}
           <span
             className={`absolute left-0 top-1 grid h-8 w-8 place-items-center rounded-full border border-line md:h-9 md:w-9 ${
-              exp.current ? 'bg-gradient-to-br from-accent to-accent-cyan text-white shadow-glow' : 'bg-white/[0.05] text-fg-muted'
+              exp.current ? 'bg-gradient-to-br from-accent to-accent-dark text-fg shadow-glow' : 'bg-white/[0.05] text-fg-muted'
             }`}
           >
             <Briefcase size={15} />

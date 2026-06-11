@@ -43,8 +43,43 @@ export const isFormConfigured = (): boolean => Boolean(GOOGLE_SCRIPT_URL || WEB3
 
 export type SubmitResult = { ok: true } | { ok: false; error: string };
 
+interface ApproxLocation {
+  ip: string;
+  city: string;
+  region: string;
+  country: string;
+}
+
+/**
+ * Best-effort approximate location from the sender's IP — no permission prompt,
+ * no extra form fields. Uses ipapi.co (free, keyless, HTTPS). Returns null on
+ * any failure so submission proceeds without location.
+ */
+async function getApproxLocation(): Promise<ApproxLocation | null> {
+  try {
+    const res = await fetch('https://ipapi.co/json/');
+    if (!res.ok) return null;
+    const j = await res.json();
+    if (!j || j.error) return null;
+    return {
+      ip: j.ip || '',
+      city: j.city || '',
+      region: j.region || '',
+      country: j.country_name || j.country || '',
+    };
+  } catch {
+    return null;
+  }
+}
+
+/** Human-readable "City, Region, Country" from an approximate location. */
+function formatLocation(loc: ApproxLocation | null): string {
+  if (!loc) return '';
+  return [loc.city, loc.region, loc.country].filter(Boolean).join(', ');
+}
+
 /** Submit to a Google Apps Script web app (saves to a Sheet + emails you). */
-async function submitToGoogleSheet(data: ContactFormData): Promise<SubmitResult> {
+async function submitToGoogleSheet(data: ContactFormData, loc: ApproxLocation | null): Promise<SubmitResult> {
   try {
     // Apps Script web apps don't send CORS headers, so we POST as a "simple
     // request" (text/plain, no-cors). The response is opaque — reaching here
@@ -59,6 +94,8 @@ async function submitToGoogleSheet(data: ContactFormData): Promise<SubmitResult>
         phone: data.phone || '',
         subject: data.subject || '',
         message: data.message,
+        location: formatLocation(loc),
+        ip: loc?.ip || '',
         source: 'sharadbhandari.com.np',
       }),
     });
@@ -69,7 +106,7 @@ async function submitToGoogleSheet(data: ContactFormData): Promise<SubmitResult>
 }
 
 /** Submit to Web3Forms (email delivery, no backend). */
-async function submitToWeb3Forms(data: ContactFormData): Promise<SubmitResult> {
+async function submitToWeb3Forms(data: ContactFormData, loc: ApproxLocation | null): Promise<SubmitResult> {
   try {
     const res = await fetch('https://api.web3forms.com/submit', {
       method: 'POST',
@@ -82,6 +119,8 @@ async function submitToWeb3Forms(data: ContactFormData): Promise<SubmitResult> {
         email: data.email,
         phone: data.phone || '',
         message: data.message,
+        location: formatLocation(loc) || 'Unknown',
+        ip: loc?.ip || '',
       }),
     });
     const json = await res.json().catch(() => ({}));
@@ -94,8 +133,10 @@ async function submitToWeb3Forms(data: ContactFormData): Promise<SubmitResult> {
 
 /** Submit the contact form through the first configured channel. */
 export async function submitContact(data: ContactFormData): Promise<SubmitResult> {
-  if (GOOGLE_SCRIPT_URL) return submitToGoogleSheet(data);
-  if (WEB3FORMS_KEY) return submitToWeb3Forms(data);
+  // Resolve approximate location once, up front (best-effort, never blocks delivery).
+  const loc = await getApproxLocation();
+  if (GOOGLE_SCRIPT_URL) return submitToGoogleSheet(data, loc);
+  if (WEB3FORMS_KEY) return submitToWeb3Forms(data, loc);
   return { ok: false, error: 'Form delivery is not configured yet.' };
 }
 

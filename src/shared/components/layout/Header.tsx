@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
-import { navItems, profile } from '@/content/site';
+import { navItems } from '@/content/site';
+import { Brand } from './Brand';
 
 export const Header: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -27,14 +28,7 @@ export const Header: React.FC = () => {
         }`}
       >
         {/* Brand */}
-        <Link to="/" className="group flex items-center gap-3">
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-accent via-accent-indigo to-accent-cyan font-display text-sm font-bold text-white shadow-glow">
-            {profile.initials}
-          </span>
-          <span className="hidden font-display text-base font-semibold tracking-tight text-fg sm:block">
-            {profile.name}
-          </span>
-        </Link>
+        <Brand hideNameOnMobile />
 
         {/* Desktop nav */}
         <nav className="hidden items-center gap-1 md:flex">

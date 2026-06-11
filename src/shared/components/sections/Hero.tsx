@@ -142,7 +142,8 @@ export const Hero: React.FC = () => {
                 width={2212}
                 height={3839}
                 loading="eager"
-                fetchPriority="high"
+                // @ts-expect-error — React 18 only accepts the lowercase DOM attribute
+                fetchpriority="high"
                 className="aspect-[4/5] w-full object-cover"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';

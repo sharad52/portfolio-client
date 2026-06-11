@@ -98,11 +98,11 @@ export const expertise = [
 
 /** Skills grouped by category. */
 export const skillGroups = [
-  { category: 'Languages', items: ['Python 3.8+', 'JavaScript', 'SQL', 'GraphQL'] },
-  { category: 'Backend', items: ['FastAPI', 'Starlette', 'Django', 'DRF', 'Arq'] },
-  { category: 'Data & ORM', items: ['PostgreSQL', 'Redis', 'SQLAlchemy', 'Alembic'] },
+  { category: 'Languages', items: ['Python', 'JavaScript', 'SQL', 'GraphQL', 'C/C++'] },
+  { category: 'FrameWorks', items: ['FastAPI', 'Starlette', 'React', 'Django', 'DRF', 'KnockOut', 'Arq'] },
+  { category: 'Data & ORM', items: ['PostgreSQL', 'MongoDB', 'Redis', 'SQLAlchemy', 'Alembic'] },
   { category: 'APIs & Protocols', items: ['REST', 'GraphQL', 'gRPC', 'Webhooks'] },
-  { category: 'Cloud & DevOps', items: ['Docker', 'Kubernetes', 'GitHub Actions', 'CI/CD'] },
+  { category: 'Cloud & DevOps', items: ['AWS', 'Docker', 'Kubernetes', 'GitHub Actions', 'CI/CD'] },
   { category: 'Observability & Tooling', items: ['Datadog', 'Grafana', 'Pytest', 'Twilio', 'Make'] },
 ] as const;
 
@@ -239,6 +239,17 @@ export const projects: Project[] = [
     featured: true,
     accent: 'violet',
   },
+  {
+  id: 'kharchalog',
+  title: 'KharchaLog — Personal Finance Manager',
+  tagline: 'Track, plan, and grow your money — all in one place',
+  description: 'An AI-powered personal finance platform that tracks income and expenses, manages scheduled payments and loans, and delivers smart reports with investment forecasting — giving you a complete picture of your financial health.',
+  year: '2026',
+  category: 'Fintech / AI',
+  technologies: ['Python', 'JavaScript', 'AI/ML', 'PostgreSQL', 'AWS'],
+  featured: true,
+  accent: 'cyan'
+},
   {
     id: 'krispcall',
     title: 'KrispCall',
