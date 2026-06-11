@@ -36,6 +36,11 @@ jobs:
           # Without them the form falls back to WhatsApp automatically.
           VITE_GOOGLE_SCRIPT_URL: ${{ secrets.VITE_GOOGLE_SCRIPT_URL }}
           VITE_WEB3FORMS_KEY: ${{ secrets.VITE_WEB3FORMS_KEY }}
+          # Book-a-meeting (Google Calendar). VITE_BOOKING_URL is the public
+          # appointment-schedule link; without it the button falls back to a
+          # pre-invited calendar event using VITE_CALENDAR_EMAIL.
+          VITE_BOOKING_URL: ${{ secrets.VITE_BOOKING_URL }}
+          VITE_CALENDAR_EMAIL: ${{ secrets.VITE_CALENDAR_EMAIL }}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
