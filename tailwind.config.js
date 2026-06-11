@@ -1,3 +1,5 @@
+import typography from '@tailwindcss/typography';
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -31,13 +33,14 @@ export default {
           muted: '#a7b2b4',
           faint: '#7e8c8f',
         },
-        // Muted steel accent ramp (kept within the slate family)
+        // Near-neutral steel accent ramp — low chroma to match the reference
+        // (no teal/cyan; reads as a slightly brighter foreground, never a hue)
         accent: {
-          DEFAULT: '#88adb5',
-          dark: '#5e8087',
-          cyan: '#a7c7cd',
-          fuchsia: '#b3a7ad',
-          indigo: '#7d97a0',
+          DEFAULT: '#94a3a7',
+          dark: '#6c777b',
+          cyan: '#c3cdce',
+          fuchsia: '#a7a7aa',
+          indigo: '#8a969a',
         },
       },
       backgroundImage: {
@@ -46,8 +49,8 @@ export default {
         'sheen': 'linear-gradient(110deg, transparent 35%, rgba(255,255,255,0.12) 50%, transparent 65%)',
       },
       boxShadow: {
-        'glow': '0 0 0 1px rgba(255,255,255,0.06), 0 20px 60px -20px rgba(94,128,135,0.55)',
-        'glow-cyan': '0 0 0 1px rgba(255,255,255,0.06), 0 20px 60px -20px rgba(167,199,205,0.45)',
+        'glow': '0 0 0 1px rgba(255,255,255,0.06), 0 20px 60px -20px rgba(120,130,133,0.50)',
+        'glow-cyan': '0 0 0 1px rgba(255,255,255,0.06), 0 20px 60px -20px rgba(185,193,195,0.40)',
         'card': '0 1px 0 0 rgba(255,255,255,0.06) inset, 0 20px 40px -24px rgba(0,0,0,0.55)',
       },
       keyframes: {
@@ -87,5 +90,5 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [typography],
 }
