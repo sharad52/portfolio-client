@@ -7,6 +7,11 @@ interface ImportMetaEnv {
   readonly VITE_ENABLE_BLOG: string
   readonly VITE_ENABLE_COMMENTS: string
   readonly VITE_ENABLE_ANALYTICS: string
+  readonly VITE_WHATSAPP_NUMBER: string
+  readonly VITE_WEB3FORMS_KEY: string
+  readonly VITE_GOOGLE_SCRIPT_URL: string
+  readonly VITE_CALENDAR_EMAIL: string
+  readonly VITE_BOOKING_URL: string
 }
 
 interface ImportMeta {
