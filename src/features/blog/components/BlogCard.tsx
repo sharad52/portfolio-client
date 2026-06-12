@@ -25,6 +25,8 @@ export const BlogCard: React.FC<BlogCardProps> = ({ post, index = 0 }) => (
         <img
           src={post.coverImage}
           alt={post.title}
+          loading="lazy"
+          decoding="async"
           className="h-44 w-full object-cover transition-transform duration-500 group-hover:scale-105"
           onError={(e) => { e.currentTarget.parentElement!.style.display = 'none'; }}
         />
