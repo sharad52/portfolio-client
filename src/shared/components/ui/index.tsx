@@ -2,9 +2,14 @@ import React, { useRef } from 'react';
 import { motion, useInView, useScroll, useSpring, useMotionValue, useTransform, type MotionValue } from 'framer-motion';
 import {
   Server, Cloud, LayoutGrid, Users, Github, Linkedin, Mail, ArrowRight,
-  Zap, Workflow, Database,
+  Zap, Workflow, Database, Network,
   type LucideIcon,
 } from 'lucide-react';
+import { type IconType } from 'react-icons';
+import {
+  SiPython, SiFastapi, SiDjango, SiRedis, SiPostgresql, SiDocker,
+  SiKubernetes, SiGraphql, SiSqlalchemy, SiTwilio, SiGithubactions,
+} from 'react-icons/si';
 
 /* ────────────────────────────────────────────────────────────
  *  Icon resolver — maps a string key (from content) to a Lucide icon
@@ -149,19 +154,49 @@ export const MagneticButton: React.FC<{
 };
 
 /* ────────────────────────────────────────────────────────────
- *  Marquee — infinite horizontal scroll of items
+ *  Marquee — infinite horizontal scroll of tech, each with its
+ *  real brand logo in its native colour. Vibrant marks pop against
+ *  the desaturated slate canvas; sizes are uniform across the strip.
+ *  Tech with no official logo (gRPC, Arq) get a tasteful fallback.
  * ──────────────────────────────────────────────────────────── */
+const BRAND: Record<string, { Icon: IconType | LucideIcon; color: string }> = {
+  Python: { Icon: SiPython, color: '#4B8BBE' },
+  FastAPI: { Icon: SiFastapi, color: '#05BBA6' },
+  Django: { Icon: SiDjango, color: '#44B78B' }, // native #092E20 is near-black — use the leaf green
+  Redis: { Icon: SiRedis, color: '#FF4438' },
+  PostgreSQL: { Icon: SiPostgresql, color: '#5A8DD6' },
+  Docker: { Icon: SiDocker, color: '#2496ED' },
+  Kubernetes: { Icon: SiKubernetes, color: '#4D86F0' },
+  GraphQL: { Icon: SiGraphql, color: '#E535AB' },
+  gRPC: { Icon: Network, color: '#2DD4BF' }, // no official logo
+  Arq: { Icon: Zap, color: '#F5B544' }, // no official logo
+  SQLAlchemy: { Icon: SiSqlalchemy, color: '#D9603F' },
+  Twilio: { Icon: SiTwilio, color: '#F22F46' },
+  'GitHub Actions': { Icon: SiGithubactions, color: '#4D9BFF' },
+};
+
+const BRAND_ICON_SIZE = 22;
+
 export const Marquee: React.FC<{ items: readonly string[] }> = ({ items }) => (
   <div className="group relative overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_12%,black_88%,transparent)]">
     <div className="flex w-max animate-marquee gap-4 group-hover:[animation-play-state:paused]">
-      {[...items, ...items].map((item, i) => (
-        <span
-          key={`${item}-${i}`}
-          className="chip whitespace-nowrap px-4 py-2 text-sm text-fg"
-        >
-          {item}
-        </span>
-      ))}
+      {[...items, ...items].map((item, i) => {
+        const brand = BRAND[item];
+        const BrandIcon = brand?.Icon ?? Workflow;
+        return (
+          <span
+            key={`${item}-${i}`}
+            className="chip inline-flex items-center gap-2 whitespace-nowrap px-4 py-2 text-sm text-fg"
+          >
+            <BrandIcon
+              size={BRAND_ICON_SIZE}
+              style={{ color: brand?.color ?? 'var(--accent-cyan, #c3cdce)' }}
+              aria-hidden
+            />
+            {item}
+          </span>
+        );
+      })}
     </div>
   </div>
 );
