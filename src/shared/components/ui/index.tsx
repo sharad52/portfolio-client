@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { motion, useInView, useScroll, useSpring, useMotionValue, useTransform, type MotionValue } from 'framer-motion';
 import {
   Server, Cloud, LayoutGrid, Users, Github, Linkedin, Mail, ArrowRight,
-  Zap, Workflow, Database, Network,
+  Zap, Workflow, Database, Network, Facebook, Instagram,
   type LucideIcon,
 } from 'lucide-react';
 import { type IconType } from 'react-icons';
@@ -24,6 +24,8 @@ const ICONS: Record<string, LucideIcon> = {
   database: Database,
   github: Github,
   linkedin: Linkedin,
+  facebook: Facebook,
+  instagram: Instagram,
   mail: Mail,
 };
 

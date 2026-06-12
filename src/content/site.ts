@@ -40,6 +40,8 @@ export const profile = {
 export const socials = [
   { label: 'GitHub', href: 'https://github.com/sharad52', icon: 'github' },
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/sharad52', icon: 'linkedin' },
+  { label: 'Instagram', href: 'https://www.instagram.com/sharad.bee', icon: 'instagram' },
+  { label: 'Facebook', href: 'https://www.facebook.com/er.sawrad', icon: 'facebook' },
   { label: 'Email', href: `mailto:${profile.email}`, icon: 'mail' },
 ] as const;
 
