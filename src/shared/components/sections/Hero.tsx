@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ArrowDown, MapPin, Sparkles } from 'lucide-react';
+import { ArrowRight, ArrowDown, MapPin, Sparkles, CalendarClock } from 'lucide-react';
 import { profile, socials, techMarquee } from '@/content/site';
+import { buildMeetingLink } from '@/features/contact/services/contactService';
 import { AuroraBackground, Icon, MagneticButton, Marquee } from '@/shared/components/ui';
 
 /** Rotating role text */
@@ -90,9 +91,15 @@ export const Hero: React.FC = () => {
               </Link>
             </MagneticButton>
             <MagneticButton>
-              <Link to="/contact" className="btn-ghost">
-                Get in touch
-              </Link>
+              <a
+                href={buildMeetingLink()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-ghost"
+              >
+                <CalendarClock size={18} />
+                Book a call
+              </a>
             </MagneticButton>
           </motion.div>
 
