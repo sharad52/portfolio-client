@@ -1,6 +1,7 @@
-# Allow all crawlers full access
+# Allow all crawlers full access, except private admin routes
 User-agent: *
 Allow: /
+Disallow: /admin
 
 # Explicitly welcome image crawlers (helps your photo appear in search)
 User-agent: Googlebot-Image

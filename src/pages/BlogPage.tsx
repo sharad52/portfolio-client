@@ -51,6 +51,7 @@ export const BlogPage: React.FC = () => {
       <Helmet>
         <title>Writing — Sharad Bhandari</title>
         <meta name="description" content="Articles and notes on software engineering, architecture, and building for the web." />
+        <link rel="canonical" href="https://sharadbhandari.com.np/blog" />
       </Helmet>
 
       <div className="relative pt-32">

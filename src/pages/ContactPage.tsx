@@ -6,10 +6,39 @@ import {
   submitContact, whatsAppFromForm, buildWhatsAppLink, buildMeetingLink, isFormConfigured,
 } from '@/features/contact/services/contactService';
 import type { ContactFormData } from '@/features/contact/types';
-import { profile, socials } from '@/content/site';
+import { profile, socials, seo } from '@/content/site';
 import { AuroraBackground, Icon, MagneticButton, Reveal, Section } from '@/shared/components/ui';
 
 const EMPTY: ContactFormData = { name: '', email: '', subject: '', message: '', phone: '' };
+
+const CONTACT_TITLE = 'Contact Sharad Bhandari — Hire a Senior Software Engineer in Nepal';
+const CONTACT_DESC =
+  'Contact Sharad Bhandari, a senior software engineer and Python developer based in Kathmandu, Nepal. Available to hire for senior, freelance and contract roles — remote worldwide.';
+
+/** ContactPage structured data — signals hiring/contact intent for this page. */
+const contactPageLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ContactPage',
+  name: CONTACT_TITLE,
+  url: `${seo.siteUrl}/contact`,
+  mainEntity: {
+    '@type': 'Person',
+    '@id': `${seo.siteUrl}/#sharad-bhandari`,
+    name: 'Sharad Bhandari',
+    jobTitle: 'Senior Software Engineer',
+    email: `mailto:${profile.email}`,
+    telephone: profile.phone,
+    address: { '@type': 'PostalAddress', addressLocality: 'Kathmandu', addressCountry: 'NP' },
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'Hiring & project enquiries',
+      email: profile.email,
+      telephone: profile.phone,
+      areaServed: 'Worldwide',
+      availableLanguage: ['English', 'Nepali'],
+    },
+  },
+};
 
 export const ContactPage: React.FC = () => {
   const [form, setForm] = useState<ContactFormData>(EMPTY);
@@ -45,8 +74,22 @@ export const ContactPage: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Contact — Sharad Bhandari</title>
-        <meta name="description" content="Get in touch with Sharad Bhandari — open to roles, freelance projects, and collaborations." />
+        <title>{CONTACT_TITLE}</title>
+        <meta name="description" content={CONTACT_DESC} />
+        <link rel="canonical" href={`${seo.siteUrl}/contact`} />
+
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Sharad Bhandari" />
+        <meta property="og:title" content={CONTACT_TITLE} />
+        <meta property="og:description" content={CONTACT_DESC} />
+        <meta property="og:url" content={`${seo.siteUrl}/contact`} />
+        <meta property="og:image" content={seo.ogImage} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={CONTACT_TITLE} />
+        <meta name="twitter:description" content={CONTACT_DESC} />
+        <meta name="twitter:image" content={seo.ogImage} />
+
+        <script type="application/ld+json">{JSON.stringify(contactPageLd)}</script>
       </Helmet>
 
       <div className="relative pt-32">
@@ -66,6 +109,12 @@ export const ContactPage: React.FC = () => {
             </Reveal>
             <Reveal delay={0.1}>
               <p className="mt-5 text-lg text-fg-muted">
+                Available to hire as a <strong className="text-fg">senior software engineer and Python developer in Nepal</strong> —
+                for full-time, freelance and contract roles, remote worldwide.
+              </p>
+            </Reveal>
+            <Reveal delay={0.15}>
+              <p className="mt-3 text-fg-muted">
                 The fastest way to reach me is WhatsApp. Prefer email? Drop a message below — it lands straight in my inbox.
               </p>
             </Reveal>
