@@ -40,6 +40,23 @@ const escRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const absImage = (path) =>
   !path ? FALLBACK_IMAGE : path.startsWith('http') ? path : `${SITE_URL}${path}`;
 
+/** Clamp a meta description to <=160 chars (search-engine display limit). */
+const clampDesc = (s) => {
+  const t = String(s ?? '').trim();
+  return t.length <= 160 ? t : `${t.slice(0, 157).trimEnd()}…`;
+};
+
+/**
+ * Static body for crawlers that don't run JS: gives each page a real <h1> and
+ * text inside #root. React's createRoot() clears #root on mount, so visitors
+ * never see this — only no-JS crawlers (and the split-second before hydration).
+ */
+const bodyHtml = (h1, intro, extra = '') =>
+  `<h1>${escAttr(h1)}</h1>\n      <p>${escAttr(intro)}</p>${extra}`;
+
+const injectBody = (html, body) =>
+  html.replace('<div id="root"></div>', `<div id="root">${body}</div>`);
+
 /** Replace <title>…</title>. */
 const setTitle = (html, title) =>
   html.replace(/<title>[\s\S]*?<\/title>/, () => `<title>${escAttr(title)}</title>`);
@@ -61,10 +78,10 @@ const setCanonical = (html, href) =>
   html.replace(/(<link\s+rel="canonical"\s+href=")[^"]*(")/, (_m, a, b) => `${a}${escAttr(href)}${b}`);
 
 /* ── core: apply a route's metadata to the template ──────────────────── */
-function applyMeta(template, { title, description, url, image, ogType, articleMeta }) {
+function applyMeta(template, { title, description, url, image, ogType, articleMeta, body }) {
   let html = template;
   html = setTitle(html, title);
-  html = setMeta(html, 'name', 'description', description);
+  html = setMeta(html, 'name', 'description', clampDesc(description));
   html = setCanonical(html, url);
 
   html = setMeta(html, 'property', 'og:type', ogType);
@@ -89,6 +106,9 @@ function applyMeta(template, { title, description, url, image, ogType, articleMe
 
   if (articleMeta) {
     html = html.replace('</head>', `    ${articleMeta}\n  </head>`);
+  }
+  if (body) {
+    html = injectBody(html, body);
   }
   return html;
 }
@@ -163,11 +183,19 @@ async function main() {
   };
 
   const STATIC_ROUTES = [
-    { path: 'projects', title: 'Work — Sharad Bhandari', description: 'Selected projects and engineering work by Sharad Bhandari, Senior Software Engineer.' },
-    { path: 'experience', title: 'Experience — Sharad Bhandari', description: 'Professional experience and career journey of Sharad Bhandari, Senior Software Engineer.' },
-    { path: 'blog', title: 'Writing — Sharad Bhandari', description: 'Articles and notes on software engineering, architecture, and building for the web by Sharad Bhandari.', ld: blogLd },
-    { path: 'contact', title: contactTitle, description: 'Contact Sharad Bhandari, a senior software engineer and Python developer based in Kathmandu, Nepal. Available to hire for senior, freelance and contract roles — remote worldwide.', ld: contactLd },
+    { path: 'projects', title: 'Work — Sharad Bhandari', h1: 'Selected work by Sharad Bhandari', description: 'Selected projects and engineering work by Sharad Bhandari, Senior Software Engineer.' },
+    { path: 'experience', title: 'Experience — Sharad Bhandari', h1: 'Experience — Sharad Bhandari', description: 'Professional experience and career journey of Sharad Bhandari, Senior Software Engineer.' },
+    { path: 'blog', title: 'Writing — Sharad Bhandari', h1: 'Writing by Sharad Bhandari', description: 'Articles and notes on software engineering, architecture, and building for the web by Sharad Bhandari.', ld: blogLd },
+    { path: 'contact', title: contactTitle, h1: 'Contact Sharad Bhandari', description: 'Contact Sharad Bhandari — senior software engineer & Python developer in Kathmandu, Nepal. Available to hire for senior, freelance and remote roles.', ld: contactLd },
   ];
+
+  // Homepage: keep its meta from the template, inject a static <h1> + nav for crawlers.
+  const homeBody = bodyHtml(
+    'Sharad Bhandari',
+    'Senior Software Engineer & backend developer based in Kathmandu, Nepal. 7+ years building scalable, cloud-ready systems, APIs and async architectures.',
+    `\n      <nav aria-label="Primary">\n        <a href="/projects">Work</a>\n        <a href="/experience">Experience</a>\n        <a href="/blog">Writing</a>\n        <a href="/contact">Contact</a>\n      </nav>`,
+  );
+  await writeFile(templatePath, injectBody(template, homeBody), 'utf8');
 
   for (const r of STATIC_ROUTES) {
     const html = applyMeta(template, {
@@ -177,6 +205,7 @@ async function main() {
       image: FALLBACK_IMAGE,
       ogType: 'website',
       articleMeta: r.ld ? `<script type="application/ld+json">${JSON.stringify(r.ld)}</script>` : undefined,
+      body: bodyHtml(r.h1, r.description),
     });
     await writeRoute(r.path, html);
     count++;
@@ -227,6 +256,7 @@ async function main() {
       image,
       ogType: 'article',
       articleMeta,
+      body: bodyHtml(post.title, post.excerpt),
     });
     await writeRoute(`blog/${post.slug}`, html);
     count++;
