@@ -1043,42 +1043,38 @@ export class BlogService {
     // TODO: Replace with real API call when backend is ready
     // return ApiService.get<PaginatedResponse<BlogPost>>(`${this.BASE_PATH}/posts`, { params });
     
-    // Mock implementation
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const filteredPosts = MOCK_POSTS.filter(post => {
-          if (params?.search) {
-            const searchLower = params.search.toLowerCase();
-            return (
-              post.title.toLowerCase().includes(searchLower) ||
-              post.excerpt.toLowerCase().includes(searchLower)
-            );
-          }
-          if (params?.category && post.category.slug !== params.category) {
-            return false;
-          }
-          if (params?.tag && !post.tags.some(t => t.slug === params.tag)) {
-            return false;
-          }
-          return true;
-        });
-
-        const page = params?.page || 1;
-        const limit = params?.limit || 10;
-        const start = (page - 1) * limit;
-        const paginated = filteredPosts.slice(start, start + limit);
-
-        resolve({
-          data: paginated,
-          pagination: {
-            page,
-            limit,
-            total: filteredPosts.length,
-            totalPages: Math.ceil(filteredPosts.length / limit),
-          },
-        });
-      }, 500);
+    // Mock implementation — resolves synchronously (no artificial latency).
+    const filteredPosts = MOCK_POSTS.filter(post => {
+      if (params?.search) {
+        const searchLower = params.search.toLowerCase();
+        return (
+          post.title.toLowerCase().includes(searchLower) ||
+          post.excerpt.toLowerCase().includes(searchLower)
+        );
+      }
+      if (params?.category && post.category.slug !== params.category) {
+        return false;
+      }
+      if (params?.tag && !post.tags.some(t => t.slug === params.tag)) {
+        return false;
+      }
+      return true;
     });
+
+    const page = params?.page || 1;
+    const limit = params?.limit || 10;
+    const start = (page - 1) * limit;
+    const paginated = filteredPosts.slice(start, start + limit);
+
+    return {
+      data: paginated,
+      pagination: {
+        page,
+        limit,
+        total: filteredPosts.length,
+        totalPages: Math.ceil(filteredPosts.length / limit),
+      },
+    };
   }
 
   // Get a single blog post by slug
@@ -1086,13 +1082,8 @@ export class BlogService {
     // TODO: Replace with real API call
     // return ApiService.get<BlogPost>(`${this.BASE_PATH}/posts/${slug}`);
     
-    // Mock implementation
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const post = MOCK_POSTS.find(p => p.slug === slug);
-        resolve(post || null);
-      }, 500);
-    });
+    // Mock implementation — resolves synchronously (no artificial latency).
+    return MOCK_POSTS.find(p => p.slug === slug) || null;
   }
 
   // Get featured posts
@@ -1100,12 +1091,8 @@ export class BlogService {
     // TODO: Replace with real API call
     // return ApiService.get<BlogPost[]>(`${this.BASE_PATH}/posts/featured`, { params: { limit } });
     
-    // Mock implementation
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(MOCK_POSTS.slice(0, limit));
-      }, 500);
-    });
+    // Mock implementation — resolves synchronously (no artificial latency).
+    return MOCK_POSTS.slice(0, limit);
   }
 
   // Create a new blog post (admin only)
@@ -1128,10 +1115,8 @@ export class BlogService {
     // TODO: Replace with real API call
     // return ApiService.get<BlogComment[]>(`${this.BASE_PATH}/posts/${postId}/comments`);
     
-    // Mock implementation
-    return new Promise((resolve) => {
-      setTimeout(() => resolve([]), 500);
-    });
+    // Mock implementation — resolves synchronously (no artificial latency).
+    return [];
   }
 
   // Add a comment to a post

@@ -119,6 +119,7 @@ export const BlogPostPage: React.FC = () => {
               transition={{ duration: 0.6, delay: 0.1 }}
               src={post.coverImage}
               alt={post.title}
+              decoding="async"
               className="mt-10 w-full rounded-3xl border border-line"
               onError={(e) => { e.currentTarget.style.display = 'none'; }}
             />
