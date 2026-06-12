@@ -13,7 +13,7 @@ const EMPTY: ContactFormData = { name: '', email: '', subject: '', message: '', 
 
 const CONTACT_TITLE = 'Contact Sharad Bhandari — Hire a Senior Software Engineer in Nepal';
 const CONTACT_DESC =
-  'Contact Sharad Bhandari, a senior software engineer and Python developer based in Kathmandu, Nepal. Available to hire for senior, freelance and contract roles — remote worldwide.';
+  'Contact Sharad Bhandari — senior software engineer & Python developer in Kathmandu, Nepal. Available to hire for senior, freelance and remote roles.';
 
 /** ContactPage structured data — signals hiring/contact intent for this page. */
 const contactPageLd = {
