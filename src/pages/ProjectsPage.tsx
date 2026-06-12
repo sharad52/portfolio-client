@@ -17,6 +17,7 @@ export const ProjectsPage: React.FC = () => {
       <Helmet>
         <title>Work — Sharad Bhandari</title>
         <meta name="description" content="Selected projects and engineering work by Sharad Bhandari." />
+        <link rel="canonical" href="https://sharadbhandari.com.np/projects" />
       </Helmet>
 
       <div className="relative pt-32">

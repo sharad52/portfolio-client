@@ -8,7 +8,14 @@ import { BlogService } from '@/features/blog/services/blogService';
 import { BlogPost } from '@/features/blog/types';
 import { formatDate } from '@/shared/utils/helpers';
 import { ROUTES } from '@/core/routes';
+import { seo } from '@/content/site';
 import { AuroraBackground } from '@/shared/components/ui';
+
+/** Resolve a (possibly relative) image path to an absolute URL — OG/Twitter require absolute. */
+const absoluteImage = (path?: string): string => {
+  if (!path) return seo.ogImage;
+  return path.startsWith('http') ? path : `${seo.siteUrl}${path}`;
+};
 
 /* Renders fenced code blocks as a faux editor window: title bar with
    traffic-light dots + a language label, then the scrollable code area. */
@@ -87,11 +94,56 @@ export const BlogPostPage: React.FC = () => {
   }
   if (error || !post) return <Navigate to={ROUTES.BLOG} replace />;
 
+  // Article structured data — lets search engines surface this post for its topic.
+  const blogPostingLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.excerpt,
+    image: absoluteImage(post.coverImage),
+    datePublished: post.publishedAt,
+    dateModified: post.updatedAt || post.publishedAt,
+    author: {
+      '@type': 'Person',
+      '@id': `${seo.siteUrl}/#sharad-bhandari`,
+      name: 'Sharad Bhandari',
+      url: `${seo.siteUrl}/`,
+    },
+    publisher: { '@id': `${seo.siteUrl}/#sharad-bhandari` },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': `${seo.siteUrl}/blog/${post.slug}` },
+    articleSection: post.category?.name,
+    keywords: post.tags?.map((t) => t.name).join(', '),
+    inLanguage: 'en',
+  };
+
   return (
     <>
       <Helmet>
         <title>{post.title} — Sharad Bhandari</title>
         <meta name="description" content={post.excerpt} />
+        <link rel="canonical" href={`${seo.siteUrl}/blog/${post.slug}`} />
+
+        {/* Open Graph — article-specific (also baked into static HTML by scripts/prerender.mjs) */}
+        <meta property="og:type" content="article" />
+        <meta property="og:site_name" content="Sharad Bhandari" />
+        <meta property="og:title" content={post.title} />
+        <meta property="og:description" content={post.excerpt} />
+        <meta property="og:url" content={`${seo.siteUrl}/blog/${post.slug}`} />
+        <meta property="og:image" content={absoluteImage(post.coverImage)} />
+        <meta property="og:image:alt" content={post.title} />
+        <meta property="article:published_time" content={post.publishedAt} />
+        <meta property="article:author" content="Sharad Bhandari" />
+        {post.category?.name && <meta property="article:section" content={post.category.name} />}
+        {post.tags?.map((t) => <meta property="article:tag" content={t.name} key={t.id} />)}
+
+        {/* Twitter / X */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={post.title} />
+        <meta name="twitter:description" content={post.excerpt} />
+        <meta name="twitter:image" content={absoluteImage(post.coverImage)} />
+        <meta name="twitter:image:alt" content={post.title} />
+
+        <script type="application/ld+json">{JSON.stringify(blogPostingLd)}</script>
       </Helmet>
 
       <div className="relative pt-32">

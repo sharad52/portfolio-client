@@ -11,6 +11,7 @@ export const ExperiencePage: React.FC = () => (
     <Helmet>
       <title>Experience — Sharad Bhandari</title>
       <meta name="description" content="Professional experience and career journey of Sharad Bhandari, Senior Software Engineer." />
+      <link rel="canonical" href="https://sharadbhandari.com.np/experience" />
     </Helmet>
 
     <div className="relative pt-32">
