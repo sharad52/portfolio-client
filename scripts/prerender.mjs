@@ -146,10 +146,26 @@ async function main() {
     },
   };
 
+  // ItemList of all published articles — helps the writing index surface in search.
+  const publishedPosts = MOCK_POSTS.filter((p) => p.published !== false);
+  const blogLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Articles by Sharad Bhandari',
+    itemListOrder: 'https://schema.org/ItemListOrderDescending',
+    numberOfItems: publishedPosts.length,
+    itemListElement: publishedPosts.map((p, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      url: `${SITE_URL}/blog/${p.slug}`,
+      name: p.title,
+    })),
+  };
+
   const STATIC_ROUTES = [
     { path: 'projects', title: 'Work — Sharad Bhandari', description: 'Selected projects and engineering work by Sharad Bhandari, Senior Software Engineer.' },
     { path: 'experience', title: 'Experience — Sharad Bhandari', description: 'Professional experience and career journey of Sharad Bhandari, Senior Software Engineer.' },
-    { path: 'blog', title: 'Writing — Sharad Bhandari', description: 'Articles and notes on software engineering, architecture, and building for the web by Sharad Bhandari.' },
+    { path: 'blog', title: 'Writing — Sharad Bhandari', description: 'Articles and notes on software engineering, architecture, and building for the web by Sharad Bhandari.', ld: blogLd },
     { path: 'contact', title: contactTitle, description: 'Contact Sharad Bhandari, a senior software engineer and Python developer based in Kathmandu, Nepal. Available to hire for senior, freelance and contract roles — remote worldwide.', ld: contactLd },
   ];
 
