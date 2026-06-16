@@ -22,6 +22,13 @@ export const ContactCTA: React.FC = () => (
         <p className="mx-auto mt-5 max-w-xl text-lg text-fg-muted">
           Whether it's a role, a project, or a problem you can't quite untangle — I'd love to hear about it.
         </p>
+        <p className="mx-auto mt-3 max-w-xl text-sm text-fg-muted">
+          Looking to{' '}
+          <Link to="/contact" className="text-accent-cyan underline underline-offset-2 hover:text-fg">
+            hire a senior software engineer in Nepal
+          </Link>
+          ? Let's talk.
+        </p>
 
         <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
           <MagneticButton>

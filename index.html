@@ -13,6 +13,30 @@
 
     <meta name="theme-color" content="#2d393e" />
 
+    <!--
+      Critical inline CSS (applies on first paint, before the render-blocking
+      bundle loads). Two jobs:
+        1. Paint the dark canvas immediately so there's no white flash.
+        2. Hide the crawler-only fallback baked into #root by prerender.mjs.
+           It stays in the DOM (so bots + screen readers still read the real
+           <h1>/intro), but sighted visitors never see the unstyled text in
+           the split-second before React mounts and clears #root.
+    -->
+    <style>
+      html { background-color: #3a484e; }
+      .prerender-fallback {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+    </style>
+
     <!-- Bing Webmaster Tools site verification -->
     <meta name="msvalidate.01" content="6FB198F9CA6EAC403CCBBD86408BD231" />
 

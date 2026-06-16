@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { Send, Mail, MapPin, Phone, MessageCircle, CheckCircle2, Loader2, CalendarClock } from 'lucide-react';
@@ -40,10 +41,51 @@ const contactPageLd = {
   },
 };
 
+/**
+ * FAQPage data — drives the visible Q&A block below AND the FAQPage JSON-LD.
+ * Keep the two in sync (Google requires FAQ markup to match on-page text).
+ * Note: since 2023 Google limits FAQ *rich results* to authoritative gov/health
+ * sites, so this likely won't show as a SERP rich snippet — but the crawlable,
+ * keyword-aligned Q&A copy still helps topical relevance for "hire …" queries.
+ */
+const FAQ = [
+  {
+    q: 'Can I hire a senior software engineer from Nepal?',
+    a: `Yes — I'm Sharad Bhandari, a senior software engineer based in Kathmandu, Nepal with ${profile.yearsExperience}+ years of experience, available to hire for full-time, freelance, contract and remote roles worldwide.`,
+  },
+  {
+    q: 'Is Sharad Bhandari available for remote work?',
+    a: 'Yes. I work remotely with teams worldwide as well as on-site in Nepal, across full-time, freelance and contract engagements.',
+  },
+  {
+    q: 'What does Sharad Bhandari specialise in?',
+    a: 'Full-stack software engineering with deep backend and API expertise — Python (FastAPI, Django), React front-ends, and cloud-native infrastructure on AWS with Docker and Kubernetes. I take projects end to end: architecture decisions, async and data-intensive system design, CI/CD, integrations at scale, and technical leadership of engineering teams.',
+  },
+] as const;
+
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: FAQ.map(({ q, a }) => ({
+    '@type': 'Question',
+    name: q,
+    acceptedAnswer: { '@type': 'Answer', text: a },
+  })),
+};
+
 export const ContactPage: React.FC = () => {
   const [form, setForm] = useState<ContactFormData>(EMPTY);
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const [error, setError] = useState<string | null>(null);
+  const location = useLocation();
+
+  // Footer "Hire a senior software engineer in Nepal" links to /contact#book —
+  // smooth-scroll to the booking card so visitors land on the call-to-action.
+  useEffect(() => {
+    if (location.hash !== '#book') return;
+    const el = document.getElementById('book');
+    if (el) requestAnimationFrame(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+  }, [location]);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
@@ -90,6 +132,7 @@ export const ContactPage: React.FC = () => {
         <meta name="twitter:image" content={seo.ogImage} />
 
         <script type="application/ld+json">{JSON.stringify(contactPageLd)}</script>
+        <script type="application/ld+json">{JSON.stringify(faqLd)}</script>
       </Helmet>
 
       <div className="relative pt-32">
@@ -104,13 +147,15 @@ export const ContactPage: React.FC = () => {
             </Reveal>
             <Reveal delay={0.05}>
               <h1 className="font-display text-4xl font-medium tracking-tight text-fg md:text-5xl">
-                Let's <span className="gradient-text">connect</span>
+                Hire a <span className="gradient-text">senior software engineer</span> in Nepal
               </h1>
             </Reveal>
             <Reveal delay={0.1}>
               <p className="mt-5 text-lg text-fg-muted">
-                Available to hire as a <strong className="text-fg">senior software engineer and Python developer in Nepal</strong> —
-                for full-time, freelance and contract roles, remote worldwide.
+                I'm <strong className="text-fg">Sharad Bhandari</strong> — a senior software engineer and
+                Python / backend developer based in Kathmandu, Nepal, with {profile.yearsExperience}+ years
+                building scalable, cloud-ready systems and APIs. Available to hire for full-time, freelance
+                and contract roles — on-site in Nepal or remote worldwide.
               </p>
             </Reveal>
             <Reveal delay={0.15}>
@@ -120,7 +165,7 @@ export const ContactPage: React.FC = () => {
             </Reveal>
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+          <div id="book" className="grid scroll-mt-28 gap-6 lg:grid-cols-[0.9fr_1.1fr]">
             {/* Left — info + WhatsApp */}
             <Reveal>
               <div className="flex h-full flex-col gap-8 rounded-3xl border border-line bg-white/[0.03] p-6 backdrop-blur-xl sm:p-8">
@@ -283,6 +328,51 @@ export const ContactPage: React.FC = () => {
               </div>
             </Reveal>
           </div>
+
+          {/* Crawlable hiring copy + FAQ — feeds topical relevance for
+              "hire a senior software engineer in Nepal" style queries. */}
+          <Reveal>
+            <div className="mt-16 max-w-3xl border-t border-line pt-10">
+              <h2 className="font-display text-2xl font-semibold text-fg">
+                Hiring a senior software engineer from Nepal
+              </h2>
+              <p className="mt-4 text-fg-muted">
+                I work with startups and product teams worldwide as a full-stack senior engineer —
+                building APIs and async systems in Python (FastAPI, Django), React front-ends, and
+                cloud-native infrastructure on AWS with Docker and Kubernetes. I drive projects end to
+                end: architecture decisions, system design, CI/CD and integrations at scale, and I lead
+                engineering teams. Based in Kathmandu, Nepal and open to full-time, freelance, contract
+                and remote roles.
+              </p>
+              <dl className="mt-8 space-y-6">
+                {FAQ.map(({ q, a }) => (
+                  <div key={q}>
+                    <dt className="font-display text-lg font-medium text-fg">{q}</dt>
+                    <dd className="mt-1.5 text-fg-muted">{a}</dd>
+                  </div>
+                ))}
+              </dl>
+              <p className="mt-8 text-fg-muted">
+                Ready to talk?{' '}
+                <a
+                  href={buildWhatsAppLink('Hi Sharad, I’d like to discuss hiring you for a project.')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-accent-cyan underline underline-offset-2 hover:text-fg"
+                >
+                  Message me on WhatsApp
+                </a>{' '}
+                or email{' '}
+                <a
+                  href={`mailto:${profile.email}`}
+                  className="text-accent-cyan underline underline-offset-2 hover:text-fg"
+                >
+                  {profile.email}
+                </a>
+                .
+              </p>
+            </div>
+          </Reveal>
         </Section>
       </div>
     </>
