@@ -52,7 +52,7 @@ const clampDesc = (s) => {
  * never see this — only no-JS crawlers (and the split-second before hydration).
  */
 const bodyHtml = (h1, intro, extra = '') =>
-  `<h1>${escAttr(h1)}</h1>\n      <p>${escAttr(intro)}</p>${extra}`;
+  `<div class="prerender-fallback">\n      <h1>${escAttr(h1)}</h1>\n      <p>${escAttr(intro)}</p>${extra}\n      </div>`;
 
 const injectBody = (html, body) =>
   html.replace('<div id="root"></div>', `<div id="root">${body}</div>`);
@@ -186,7 +186,7 @@ async function main() {
     { path: 'projects', title: 'Work — Sharad Bhandari', h1: 'Selected work by Sharad Bhandari', description: 'Selected projects and engineering work by Sharad Bhandari, Senior Software Engineer.' },
     { path: 'experience', title: 'Experience — Sharad Bhandari', h1: 'Experience — Sharad Bhandari', description: 'Professional experience and career journey of Sharad Bhandari, Senior Software Engineer.' },
     { path: 'blog', title: 'Writing — Sharad Bhandari', h1: 'Writing by Sharad Bhandari', description: 'Articles and notes on software engineering, architecture, and building for the web by Sharad Bhandari.', ld: blogLd },
-    { path: 'contact', title: contactTitle, h1: 'Contact Sharad Bhandari', description: 'Contact Sharad Bhandari — senior software engineer & Python developer in Kathmandu, Nepal. Available to hire for senior, freelance and remote roles.', ld: contactLd },
+    { path: 'contact', title: contactTitle, h1: 'Hire a Senior Software Engineer in Nepal', description: 'Hire Sharad Bhandari — senior software engineer & Python / backend developer in Kathmandu, Nepal. Available for full-time, freelance, contract and remote roles worldwide.', ld: contactLd },
   ];
 
   // Homepage: keep its meta from the template, inject a static <h1> + nav for crawlers.

@@ -59,6 +59,12 @@ export const Footer: React.FC = () => {
               </li>
               <li className="text-fg-muted">{profile.phone}</li>
               <li className="text-fg-muted">{profile.location}</li>
+              <li className="pt-1">
+                <Link to="/contact#book" className="group inline-flex items-center gap-1 text-fg-muted transition-colors hover:text-fg">
+                  Hire a senior software engineer in Nepal
+                  <ArrowUpRight size={14} className="opacity-0 transition-opacity group-hover:opacity-100" />
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
