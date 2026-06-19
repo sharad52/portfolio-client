@@ -14,6 +14,7 @@ const CATEGORIES: { label: string; slug: string | null }[] = [
   { label: 'Backend', slug: 'backend' },
   { label: 'AI/ML', slug: 'ai-ml' },
   { label: 'DevSecOps', slug: 'devsecops' },
+  { label: 'Architecture', slug: 'architecture' },
 ];
 
 export const BlogPage: React.FC = () => {
