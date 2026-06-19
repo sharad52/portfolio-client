@@ -12,6 +12,251 @@ import type { BlogPost } from '../types';
 
 export const MOCK_POSTS: BlogPost[] = [
   {
+    id: '15',
+    title: 'The Project Lifecycle: What a Senior Engineer Plans For',
+    slug: 'project-lifecycle-senior-engineer-playbook',
+    excerpt:
+      'A phase-by-phase playbook for taking a software project from an empty repo to a production system that survives growth — the decisions, guardrails, and tooling a senior engineer puts in place before, during, and long after development.',
+    content: `Most projects don't fail because someone wrote a bad function. They fail because nobody decided, up front, *how* the project would be built — and the small omissions compound. No lock file, so "works on my machine" becomes a daily ritual. No CI gate, so formatting debates leak into code review. No observability, so the first you hear of an outage is from a customer.
+
+The difference between a junior and a senior approach isn't cleverness in the hot path — it's **planning the whole lifecycle**. Below is a phase-by-phase playbook: what to *decide*, what to *implement*, and which *tools* earn their keep. The examples lean Python, but the structure is language-agnostic.
+
+> **How to read this:** the phases are roughly sequential, but the foundation work in Phase 0 pays off most when it's done *before* anyone else commits code. You don't have to do everything at once — there's a priority checklist at the end.
+
+## Phase 0 — Before development starts (foundation)
+
+This is the highest-leverage phase. Conventions are cheap to set now and expensive to retrofit once several people are committing. The goal is simple to state and surprisingly rare to achieve: **a new contributor can go from \`git clone\` to a running app with passing tests in minutes.**
+
+### Decisions to make
+
+- **Application vs. library.** This single choice ripples through packaging, your version matrix, and how seriously you guard the public API. Decide it explicitly.
+- **Target Python version(s).** Pin a minimum with \`requires-python\`. Libraries usually support a matrix; an app can pin one version.
+- **Dependency manager.** Pick one and commit to it. Mixing \`pip\`, \`poetry\`, and \`conda\` across a team is a slow tax.
+- **Branching model.** Trunk-based or GitHub-flow is the simplest thing that works for most teams.
+- **Type-checking strictness.** Agree early — tightening types after the fact is painful.
+- **License & governance**, especially for anything open source.
+
+### What to implement
+
+- A **\`src/\` layout** — it sidesteps a whole class of "it imports in dev but not when installed" bugs.
+- **\`pyproject.toml\` as the single source of config.** Consolidate tool settings here instead of scattering dotfiles.
+- A **committed lock file** so everyone resolves an identical dependency tree.
+- A **task runner** so common commands are discoverable and identical for everyone. This is one of the most underrated investments — it deletes "how do I run this?" from every onboarding.
+
+\`\`\`toml
+# pyproject.toml — one file, the whole project's config
+[project]
+name = "acme-service"
+requires-python = ">=3.12"
+dependencies = ["httpx>=0.27", "pydantic>=2.7"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.mypy]
+strict = true
+\`\`\`
+
+\`\`\`bash
+# justfile — discoverable, identical commands for everyone
+setup:        uv sync
+test:         uv run pytest
+lint:         uv run ruff check . && uv run mypy .
+run:          uv run python -m acme_service
+\`\`\`
+
+Round it out with onboarding docs (a \`README.md\` that doubles as a setup guide, plus a \`CONTRIBUTING.md\`), a correct \`.gitignore\` from day one (**never** commit \`.env\`, build artifacts, or caches), an \`.editorconfig\` for cross-editor consistency, and — optionally — a devcontainer for a fully reproducible environment.
+
+**Recommended tools:** deps/env/Python version → **uv** (fast, all-in-one); task running → **just**; structure → \`src/\` layout; reproducible env → **devcontainers**.
+
+## Phase 1 — During development
+
+The aim here is **consistency and fast feedback**: code review focuses on logic instead of formatting, and problems surface on the contributor's machine, not in production.
+
+### Decisions to make
+
+- A **coverage threshold** that fails CI if breached — a *guardrail*, not a target. (95% coverage can still test nothing meaningful; treat it as a floor.)
+- A rough **test taxonomy**: how work splits across unit / integration / end-to-end.
+- **Commit conventions** (e.g. Conventional Commits) — a small discipline that later unlocks automated changelogs and version bumps.
+- A **config strategy**: 12-factor-style configuration via environment variables.
+
+### What to implement
+
+- **Lint + format + import-sort in one tool.** Ruff now covers all three, fast, replacing the old black + flake8 + isort trio.
+- **Static type checking** (mypy or pyright) wired into the workflow.
+- **Pre-commit hooks** so checks run automatically. Note these are skippable with \`--no-verify\`, so treat them as a convenience layer — real enforcement is CI.
+- A **test framework with fixtures/factories**, and **CI running lint, type-check, and tests on every push/PR**. This is the actual enforcement layer.
+- **Typed, validated config loading** and **structured logging** from the start — both are far cheaper to wire in now than to retrofit.
+- **Secret scanning** in pre-commit and CI. Contributors leak credentials more often than you'd expect; commit a \`.env.example\`, never a real \`.env\`.
+
+\`\`\`yaml
+# .pre-commit-config.yaml — the convenience layer
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.0
+    hooks:
+      - id: ruff        # lint
+      - id: ruff-format # format
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.11.0
+    hooks:
+      - id: mypy
+\`\`\`
+
+Typed settings turn "did someone forget an env var?" from a 2am incident into a startup-time error:
+
+\`\`\`python
+from pydantic_settings import BaseSettings
+
+class Settings(BaseSettings):
+    database_url: str
+    log_level: str = "INFO"
+    debug: bool = False
+    # Missing/mistyped env vars fail loudly at boot, not deep in a request.
+
+settings = Settings()
+\`\`\`
+
+**Recommended tools:** **Ruff** (lint/format/imports); **mypy**/**pyright** (types); **pre-commit**; **pytest** + pytest-cov + pytest-xdist; **factory_boy**/**hypothesis** for test data; **GitHub Actions**; **pydantic-settings**; **structlog**; **gitleaks**/**trufflehog**.
+
+## Phase 2 — Pre-release (hardening)
+
+The code works on a laptop. This phase closes the gap between "passes tests" and "safe to ship."
+
+### Decisions to make
+
+- **Versioning scheme** — SemVer for libraries; date-based or git-SHA tags for apps.
+- **Release process** — manual tag, or automated on merge.
+- **Branch protection rules** — which checks must pass, how many reviews.
+- **Supply-chain policy** — how CVEs and dependency updates get handled.
+
+### What to implement
+
+- **Branch protection** requiring CI to pass and at least one review. Pre-commit can be bypassed; this is where the rules become non-negotiable.
+- A **test matrix** across supported Python versions (libraries especially).
+- **Dependency CVE scanning** (\`pip-audit\`) and **SAST** (\`bandit\`) in CI.
+- **Automated dependency updates** via Renovate or Dependabot.
+- **Containerization** — a multi-stage Dockerfile producing a small, non-root image, with a \`.dockerignore\` and a pinned base image (never \`latest\`).
+- **CODEOWNERS** so reviews route to the right people, plus PR/issue templates — and **Architecture Decision Records** so contributors don't quietly undo choices they don't understand.
+
+\`\`\`dockerfile
+# Multi-stage: build fat, ship thin and non-root
+FROM python:3.12-slim AS build
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
+WORKDIR /app
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-dev
+
+FROM python:3.12-slim
+RUN useradd -m app
+COPY --from=build /app/.venv /app/.venv
+COPY . /app
+USER app                       # never run as root
+ENV PATH="/app/.venv/bin:$PATH"
+CMD ["python", "-m", "acme_service"]
+\`\`\`
+
+**Recommended tools:** **pip-audit** (CVEs); **bandit** (SAST); **Renovate**/**Dependabot**; **Docker** multi-stage; **Trivy** (image scanning); **MkDocs** (docs); **tox**/**nox** (multi-version testing).
+
+## Phase 3 — Going to production
+
+Shipping is the start, not the end. The senior concern here is being able to deploy *safely*, *observe* what's happening, and *recover* when something breaks.
+
+### Decisions to make
+
+- **Hosting/runtime target**: containers, serverless, or VMs.
+- **Deployment strategy**: rolling, blue-green, or canary — and whether you need zero-downtime.
+- **Rollback plan**: how fast can you revert a bad release?
+- **SLOs**: what "healthy" actually means (latency, error rate, uptime).
+- **Data & migrations**: how schema changes ship without downtime or data loss.
+
+### What to implement
+
+- A **CD pipeline** that deploys on a tagged release or merge, with a manual gate for production if needed.
+- **Real secrets management** — a secrets store, not files and not env vars baked into images.
+- **Health checks** (readiness/liveness probes) so the platform knows when an instance is healthy.
+- **Managed database migrations** run as part of deploy (Alembic for SQLAlchemy).
+- **Observability — the three pillars**: structured, centralized *logs*; *metrics* (request rates, latencies, resource and business metrics); and distributed *traces* across services.
+- **Error tracking with alerting** (Sentry), **graceful shutdown** (drain connections on SIGTERM), **resource limits/autoscaling**, and **tested backups** — a backup you've never restored is a hope, not a backup.
+
+\`\`\`python
+import signal
+
+def handle_sigterm(*_):
+    # Stop accepting new work, finish in-flight requests, then exit.
+    app.begin_shutdown()
+
+signal.signal(signal.SIGTERM, handle_sigterm)
+\`\`\`
+
+**Recommended tools:** **gunicorn** + **uvicorn** workers (sync) or **uvicorn**/**hypercorn** (async); **GitHub Actions**/**ArgoCD** (CD); **Vault**/cloud secret managers; **Alembic** (migrations); **Sentry** (errors); **Prometheus** + **Grafana** (metrics); **OpenTelemetry** (tracing); **Kubernetes**/ECS/Fly.io (orchestration).
+
+## Phase 4 — Post-launch (ongoing operations)
+
+The phase teams forget to plan for — and the one that separates a project that survives growth from one that quietly accrues debt.
+
+- **Incident response**: a runbook, alert routing, and a *blameless* postmortem habit.
+- **Performance monitoring & profiling** under real load (py-spy, Scalene, memray).
+- **Dependency hygiene**: keep updates flowing so they never pile into a risky big-bang upgrade.
+- **Cost monitoring** for cloud resources.
+- **Documentation upkeep**: stale docs are worse than none — keep the README, ADRs, and runbooks current.
+- **Regular restore drills** and, for libraries, a clear **deprecation policy**.
+
+**Recommended tools:** **py-spy**/**Scalene**/**memray** (profiling); **Locust**/**k6** (load testing); **Better Stack**/**Pingdom** (synthetic checks); **PagerDuty**/**Opsgenie** (incidents).
+
+## If you can't do everything at once
+
+For the specific goal of *onboarding contributors safely*, implement in this order. Everything below line 6 can be layered in as the team and the stakes grow:
+
+1. **Task runner + onboarding docs** — removes friction immediately.
+2. **Locked dependencies + reproducible environment** — "works on my machine" disappears.
+3. **CI with branch protection** — the real enforcement layer.
+4. **Automated lint/format/type-check** (Ruff + mypy via pre-commit and CI).
+5. **Testing structure + a coverage guardrail.**
+6. **Commit/PR conventions + CODEOWNERS.**
+7. Security scanning + dependency automation.
+8. Containerization + deployment pipeline.
+9. Observability (logs, metrics, traces, error tracking).
+10. Operational runbooks + incident process.
+
+## A cohesive default stack
+
+Not gospel — a sensible starting point you adapt to your team's expertise:
+
+- **Env & deps:** uv + \`pyproject.toml\` + lock file
+- **Tasks:** just · **Quality:** Ruff + mypy + pre-commit
+- **Testing:** pytest + pytest-cov + hypothesis
+- **Config:** pydantic-settings · **Logging:** structlog
+- **CI/CD:** GitHub Actions + branch protection
+- **Security:** pip-audit + bandit + gitleaks + Renovate
+- **Containers:** multi-stage Docker + Trivy · **Migrations:** Alembic
+- **Observability:** OpenTelemetry + Prometheus/Grafana + Sentry · **Docs:** MkDocs
+
+## The takeaway
+
+Seniority shows up *before* the first line of business logic and *long after* the launch announcement. The work above isn't ceremony — each piece removes a class of future incident: the lock file kills "works on my machine," the CI gate kills the formatting debate, the typed config kills the 2am missing-env-var, the restore drill kills the backup that was never a backup. Plan the lifecycle, not just the feature, and the project stays cheap to change for years instead of expensive to rescue in months.`,
+    coverImage: '/images/project_lifecycle.png',
+    author: {
+      id: '1',
+      name: 'Er. Sharad Bhandari',
+      avatar: '/images/about-photo.jpg',
+    },
+    tags: [
+      { id: '21', name: 'Architecture', slug: 'architecture' },
+      { id: '22', name: 'Best Practices', slug: 'best-practices' },
+      { id: '23', name: 'DevOps', slug: 'devops' },
+      { id: '3', name: 'Python', slug: 'python' },
+    ],
+    category: { id: '5', name: 'Architecture', slug: 'architecture' },
+    published: true,
+    publishedAt: '2026-06-19T09:00:00Z',
+    readingTime: 13,
+    views: 1180,
+    createdAt: '2026-06-19T09:00:00Z',
+    updatedAt: '2026-06-19T09:00:00Z',
+  },
+  {
     id: '1',
     title: 'Getting Started with React and TypeScript',
     slug: 'getting-started-react-typescript',
