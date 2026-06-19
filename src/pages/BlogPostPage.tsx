@@ -94,12 +94,19 @@ export const BlogPostPage: React.FC = () => {
   }
   if (error || !post) return <Navigate to={ROUTES.BLOG} replace />;
 
+  // Search-facing copy: prefer the post's dedicated SEO fields, fall back to the
+  // editorial excerpt/tags. keywords feed both <meta name="keywords"> and JSON-LD.
+  const metaDescription = post.seo?.description || post.excerpt;
+  const keywords = (
+    post.seo?.keywords?.length ? post.seo.keywords : (post.tags?.map((t) => t.name) ?? [])
+  ).join(', ');
+
   // Article structured data — lets search engines surface this post for its topic.
   const blogPostingLd = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     headline: post.title,
-    description: post.excerpt,
+    description: metaDescription,
     image: absoluteImage(post.coverImage),
     datePublished: post.publishedAt,
     dateModified: post.updatedAt || post.publishedAt,
@@ -112,7 +119,7 @@ export const BlogPostPage: React.FC = () => {
     publisher: { '@id': `${seo.siteUrl}/#sharad-bhandari` },
     mainEntityOfPage: { '@type': 'WebPage', '@id': `${seo.siteUrl}/blog/${post.slug}` },
     articleSection: post.category?.name,
-    keywords: post.tags?.map((t) => t.name).join(', '),
+    keywords,
     inLanguage: 'en',
   };
 
@@ -120,7 +127,8 @@ export const BlogPostPage: React.FC = () => {
     <>
       <Helmet>
         <title>{post.title} — Sharad Bhandari</title>
-        <meta name="description" content={post.excerpt} />
+        <meta name="description" content={metaDescription} />
+        {keywords && <meta name="keywords" content={keywords} />}
         <link rel="canonical" href={`${seo.siteUrl}/blog/${post.slug}`} />
 
         {/* Open Graph — article-specific (also baked into static HTML by scripts/prerender.mjs) */}

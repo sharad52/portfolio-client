@@ -78,10 +78,11 @@ const setCanonical = (html, href) =>
   html.replace(/(<link\s+rel="canonical"\s+href=")[^"]*(")/, (_m, a, b) => `${a}${escAttr(href)}${b}`);
 
 /* ── core: apply a route's metadata to the template ──────────────────── */
-function applyMeta(template, { title, description, url, image, ogType, articleMeta, body }) {
+function applyMeta(template, { title, description, keywords, url, image, ogType, articleMeta, body }) {
   let html = template;
   html = setTitle(html, title);
   html = setMeta(html, 'name', 'description', clampDesc(description));
+  if (keywords) html = setMeta(html, 'name', 'keywords', keywords);
   html = setCanonical(html, url);
 
   html = setMeta(html, 'property', 'og:type', ogType);
@@ -216,6 +217,11 @@ async function main() {
     if (post.published === false) continue;
     const tags = Array.isArray(post.tags) ? post.tags : [];
     const image = absImage(post.coverImage);
+    // Search-facing copy: prefer the post's dedicated SEO fields, else excerpt/tags.
+    const description = post.seo?.description || post.excerpt;
+    const keywords = (
+      post.seo?.keywords?.length ? post.seo.keywords : tags.map((t) => t.name)
+    ).join(', ');
     const metaTags = [
       post.publishedAt && `<meta property="article:published_time" content="${escAttr(post.publishedAt)}" />`,
       `<meta property="article:author" content="Sharad Bhandari" />`,
@@ -228,7 +234,7 @@ async function main() {
       '@context': 'https://schema.org',
       '@type': 'BlogPosting',
       headline: post.title,
-      description: post.excerpt,
+      description,
       image,
       datePublished: post.publishedAt,
       dateModified: post.updatedAt || post.publishedAt,
@@ -241,7 +247,7 @@ async function main() {
       publisher: { '@id': `${SITE_URL}/#sharad-bhandari` },
       mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE_URL}/blog/${post.slug}` },
       articleSection: post.category?.name,
-      keywords: tags.map((t) => t.name).join(', '),
+      keywords,
       inLanguage: 'en',
     };
     const articleMeta = [
@@ -251,12 +257,13 @@ async function main() {
 
     const html = applyMeta(template, {
       title: `${post.title} — Sharad Bhandari`,
-      description: post.excerpt,
+      description,
+      keywords,
       url: `${SITE_URL}/blog/${post.slug}`,
       image,
       ogType: 'article',
       articleMeta,
-      body: bodyHtml(post.title, post.excerpt),
+      body: bodyHtml(post.title, description),
     });
     await writeRoute(`blog/${post.slug}`, html);
     count++;
