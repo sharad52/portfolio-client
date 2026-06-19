@@ -13,10 +13,10 @@ import type { BlogPost } from '../types';
 export const MOCK_POSTS: BlogPost[] = [
   {
     id: '15',
-    title: 'The Project Lifecycle: What a Senior Engineer Plans For',
+    title: "Python Project Setup: A Senior Engineer's Lifecycle Playbook",
     slug: 'project-lifecycle-senior-engineer-playbook',
     excerpt:
-      'A phase-by-phase playbook for taking a software project from an empty repo to a production system that survives growth — the decisions, guardrails, and tooling a senior engineer puts in place before, during, and long after development.',
+      'A phase-by-phase playbook for setting up a Python project — from an empty repo to a production system that survives growth. The decisions, guardrails, and tooling (uv, Ruff, mypy, CI/CD) a senior engineer puts in place before, during, and long after development.',
     content: `Most projects don't fail because someone wrote a bad function. They fail because nobody decided, up front, *how* the project would be built — and the small omissions compound. No lock file, so "works on my machine" becomes a daily ritual. No CI gate, so formatting debates leak into code review. No observability, so the first you hear of an outage is from a customer.
 
 The difference between a junior and a senior approach isn't cleverness in the hot path — it's **planning the whole lifecycle**. Below is a phase-by-phase playbook: what to *decide*, what to *implement*, and which *tools* earn their keep. The examples lean Python, but the structure is language-agnostic.
@@ -243,12 +243,33 @@ Seniority shows up *before* the first line of business logic and *long after* th
       avatar: '/images/about-photo.jpg',
     },
     tags: [
+      { id: '3', name: 'Python', slug: 'python' },
+      { id: '24', name: 'Project Setup', slug: 'project-setup' },
       { id: '21', name: 'Architecture', slug: 'architecture' },
       { id: '22', name: 'Best Practices', slug: 'best-practices' },
       { id: '23', name: 'DevOps', slug: 'devops' },
-      { id: '3', name: 'Python', slug: 'python' },
+      { id: '25', name: 'CI/CD', slug: 'ci-cd' },
     ],
     category: { id: '5', name: 'Architecture', slug: 'architecture' },
+    seo: {
+      title: "Python Project Setup: A Senior Engineer's Lifecycle Playbook",
+      description:
+        'A senior engineer’s phase-by-phase playbook for setting up a production-ready Python project: structure, pyproject.toml, uv, Ruff, mypy, pre-commit, CI/CD, and observability.',
+      keywords: [
+        'python project setup',
+        'python project structure',
+        'pyproject.toml',
+        'production-ready python project',
+        'python project best practices',
+        'how to structure a python project',
+        'software project lifecycle',
+        'senior software engineer python',
+        'uv python package manager',
+        'ruff mypy pre-commit',
+        'python ci cd pipeline',
+        'python project template',
+      ],
+    },
     published: true,
     publishedAt: '2026-06-19T09:00:00Z',
     readingTime: 13,
