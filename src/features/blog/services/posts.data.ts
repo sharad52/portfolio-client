@@ -12,6 +12,293 @@ import type { BlogPost } from '../types';
 
 export const MOCK_POSTS: BlogPost[] = [
   {
+    id: '16',
+    title: "React + TypeScript Project Setup: A Senior Engineer's Lifecycle Playbook",
+    slug: 'react-typescript-project-setup-senior-engineer-playbook',
+    excerpt:
+      'A phase-by-phase playbook for setting up a production-ready React + TypeScript frontend — from an empty repo to a system that survives growth. The decisions, guardrails, and tooling (Vite, pnpm, strict TS, ESLint, TanStack Query, Vitest, Playwright, CI/CD) a senior engineer puts in place before, during, and long after development.',
+    // ↓ reuses the lifecycle cover to pair visually with the Python playbook (series)
+    content: `Frontends rarely fall over because someone wrote a slow component. They rot because nobody decided, up front, *how* the app would be built — and the small omissions compound. No lock file, so "works on my machine" becomes a daily ritual. No type-check gate, so an \`any\` slips in and a refactor silently breaks three screens. No bundle budget, so the dashboard quietly grows to ship the entire charting library on first paint.
+
+The difference between a junior and a senior approach isn't a clever \`useMemo\` — it's **planning the whole lifecycle**. Below is a phase-by-phase playbook for a React + TypeScript app: what to *decide*, what to *implement*, and which *tools* earn their keep. It's the frontend companion to the Python lifecycle playbook, and it maps each backend habit to its browser-side counterpart — \`pyproject.toml\` becomes \`package.json\` + \`tsconfig.json\`, \`uv\` becomes **pnpm + Vite**, \`Ruff\` becomes **ESLint + Prettier**, \`mypy\` becomes **TypeScript strict**, \`pytest\` becomes **Vitest + Playwright**.
+
+> **How to read this:** the phases are roughly sequential, but the foundation work in Phase 0 pays off most when it's done *before* anyone else commits code. You don't have to do everything at once — there's a priority checklist at the end.
+
+## Phase 0 — Before development starts (foundation)
+
+This is the highest-leverage phase. Conventions are cheap to set now and expensive to retrofit once several people are committing. The goal is simple to state and surprisingly rare to achieve: **a new contributor can go from \`git clone\` to a running dev server with passing tests in minutes.**
+
+### Decisions to make
+
+- **App shape.** A Vite SPA + React Router is the simplest fit for a mostly-authenticated dashboard. Choose **Next.js** instead only if you need SSR for SEO on public pages or want server components and an integrated backend-for-frontend. Pick one for v1 — don't run both unless you must.
+- **Package manager.** Pick one and commit to it. **pnpm** (fast, strict, disk-efficient) is the \`uv\` analog; mixing npm/yarn/pnpm across a team is a slow tax.
+- **TypeScript strictness.** Agree on \`strict: true\` now — tightening types after the fact is painful.
+- **State boundaries.** Decide early what is *server state* (cached remote data) vs *UI state* (local/cross-cutting). Conflating them is the root of most frontend state bugs.
+- **Styling system** and **component primitives** — design tokens, Tailwind vs CSS modules, Radix/shadcn for accessible primitives. This ripples through every component.
+
+### What to implement
+
+- A **feature-sliced \`src/\` layout** that mirrors your product areas (auth, billing, dashboard, settings…), co-locating components, hooks, API calls, and tests per feature. Features may import from \`components/\`, \`lib/\`, \`hooks/\` but **not from each other's internals** — cross-feature sharing goes through a public \`index.ts\`, enforced with import-boundary lint rules.
+- **\`package.json\` + \`tsconfig.json\` as the source of config**, a pinned toolchain, and a **committed \`pnpm-lock.yaml\`** so everyone resolves an identical dependency tree. It's your supply-chain anchor.
+- **Strict TypeScript from day one** — the \`mypy\` equivalent. Turn the screws on now.
+
+\`\`\`jsonc
+// package.json — pin the toolchain so every machine and CI match
+{
+  "packageManager": "pnpm@9.x",
+  "engines": { "node": ">=20 <23" }
+}
+\`\`\`
+
+\`\`\`jsonc
+// tsconfig.json — the key strictness flags
+{
+  "compilerOptions": {
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "verbatimModuleSyntax": true,
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "paths": { "@/*": ["src/*"] }
+  }
+}
+\`\`\`
+
+Round it out with a \`.nvmrc\`, Corepack enabled, an onboarding \`README.md\`, a correct \`.gitignore\` (**never** commit \`.env\`, \`dist\`, or \`coverage\`), an \`.editorconfig\`, and a documented \`.env.example\` with **no secrets**.
+
+**The exposure trap:** anything bundled into the client is **public**. With Vite, only \`VITE_\`-prefixed vars reach the app — never put API secrets, the Stripe *secret* key, or OAuth client secrets behind that prefix. The browser gets only publishable/anon values, and you validate them at startup so a missing var fails loudly:
+
+\`\`\`ts
+// src/lib/env.ts — fail at boot, not deep in a render
+import { z } from 'zod';
+const Env = z.object({
+  VITE_API_BASE_URL: z.string().url(),
+  VITE_SENTRY_DSN: z.string().url().optional(),
+});
+export const env = Env.parse(import.meta.env);
+\`\`\`
+
+**Recommended tools:** build → **Vite**; package manager → **pnpm** (pinned via Corepack); language → **TypeScript** \`strict\`; structure → feature-sliced \`src/\` with **eslint-plugin-import** boundaries.
+
+## Phase 1 — During development
+
+The aim here is **consistency and fast feedback**: code review focuses on logic instead of formatting, and problems surface on the contributor's machine, not in production.
+
+### Decisions to make
+
+- A **coverage threshold** that fails CI if breached — a *guardrail*, not a target. Treat it as a floor; 90% coverage can still test nothing meaningful.
+- A rough **test taxonomy** following the pyramid: many component tests, fewer integration, a handful of end-to-end journeys.
+- **Commit conventions** (Conventional Commits) — a small discipline that later unlocks automated changelogs and version bumps.
+- **Where each kind of state lives** — server state in a query cache, cross-cutting UI state in a small store, the rest in component state.
+
+### What to implement
+
+- **Lint + format wired in.** ESLint (flat config) for code quality — type-aware rules plus \`react-hooks\`, \`jsx-a11y\`, and \`import\` — with Prettier handling formatting only. (**Biome** is the single-binary, Ruff-spirited alternative if you value speed over plugin breadth.)
+- **\`tsc --noEmit\` as a CI gate.** Treat type errors like build failures.
+- **Pre-commit hooks** via Husky + lint-staged so checks run on staged files automatically, plus commitlint for messages. Keep them *fast* — full typecheck/test runs belong in CI, not the commit hook. (Hooks are skippable with \`--no-verify\`; real enforcement is CI.)
+- **Separate the three state concerns.** Server state → **TanStack Query** (caching, retries, invalidation on mutation); don't dump fetched data into a global store. Cross-cutting UI state → a small typed store like **Zustand**. Forms → **React Hook Form + Zod**, where one schema validates *and* types the data.
+- **A single typed API client** with one place to handle \`401 → refresh → redirect\`. If the backend exposes OpenAPI, **generate** request/response types so they never drift, and **mock the network with MSW** so the UI can be built before the endpoint exists.
+
+\`\`\`jsonc
+// package.json — the convenience layer
+{
+  "scripts": { "prepare": "husky" },
+  "lint-staged": {
+    "*.{ts,tsx}": ["eslint --fix", "prettier --write"],
+    "*.{css,md,json}": ["prettier --write"]
+  }
+}
+\`\`\`
+
+One schema, validated *and* typed — the frontend's version of typed config loading:
+
+\`\`\`ts
+const SignupSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+  acceptedTerms: z.literal(true), // the consent box must be true
+});
+type SignupForm = z.infer<typeof SignupSchema>;
+\`\`\`
+
+**Recommended tools:** **ESLint + Prettier** (or **Biome**); **TypeScript** \`tsc --noEmit\`; **Husky + lint-staged + commitlint**; **TanStack Query** (server state); **Zustand** (UI state); **React Hook Form + Zod** (forms); **openapi-typescript** (generated contracts); **MSW** (network mocking).
+
+## Phase 2 — Pre-release (hardening)
+
+It works on a laptop. This phase closes the gap between "renders for me" and "safe to ship to real users on real devices."
+
+### Decisions to make
+
+- **Performance budgets**, set early: an initial-JS ceiling (e.g. < ~170 KB gzipped), lazy route chunks, optimized images. Budgets are worthless if you decide them after the bundle is already bloated.
+- **Accessibility target** — WCAG 2.2 AA as a *gate*, not a polish step.
+- **Branch protection rules** — which checks must pass, how many reviews.
+- **Supply-chain policy** — how CVEs and dependency updates get handled.
+
+### What to implement
+
+- **Code-split by route** with \`React.lazy\` + \`<Suspense>\` so the initial bundle stays small (the dashboard shouldn't ship the analytics charts on first paint). Centralize **route guards** for auth — but remember the frontend guard is UX, not security; authorization is enforced on the backend.
+- **Accessibility in CI:** \`eslint-plugin-jsx-a11y\`, semantic HTML first and ARIA only when needed, visible focus states, full keyboard operability, and \`@axe-core/playwright\` against key flows. Re-check color contrast for any custom token pairs.
+- **The testing pyramid wired into CI:** Vitest + React Testing Library for behavior (test the DOM the way a user interacts, not implementation details), MSW for network states (loading/empty/error/success), and Playwright for a few critical journeys headless across Chromium/WebKit.
+- **Bundle analysis with a gate** (\`rollup-plugin-visualizer\` to see it, \`size-limit\` to fail CI when a chunk blows the budget). Virtualize long lists; memoize deliberately rather than sprinkling \`useMemo\` everywhere.
+
+\`\`\`tsx
+// Lazy-load heavy routes — keep the first paint lean
+const Analytics = lazy(() => import('@/features/analytics/AnalyticsPage'));
+
+<Suspense fallback={<RouteSpinner />}>
+  <Analytics />
+</Suspense>
+\`\`\`
+
+\`\`\`jsonc
+// package.json scripts — the pytest analog
+{
+  "scripts": {
+    "test": "vitest run --coverage",
+    "e2e": "playwright test",
+    "size-limit": "size-limit"
+  }
+}
+\`\`\`
+
+**Frontend-specific security** lives in the browser: render no untrusted HTML (React escapes by default — the danger is \`dangerouslySetInnerHTML\`; sanitize with **DOMPurify** if you must), prefer **httpOnly, Secure, SameSite cookies** over a JWT in \`localStorage\` (which is XSS-readable), let card data touch only **Stripe Elements** (never your state), validate the OAuth \`state\` parameter, and run \`pnpm audit\` with **Dependabot/Renovate** keeping the lockfile current.
+
+**Recommended tools:** **React.lazy / Suspense** (code splitting); **jsx-a11y** + **@axe-core/playwright** (a11y); **Vitest + RTL** + **Playwright** + **MSW** (tests); **rollup-plugin-visualizer** + **size-limit** (bundle budgets); **@tanstack/react-virtual** (long lists); **DOMPurify**; **Dependabot/Renovate**.
+
+## Phase 3 — Going to production
+
+Shipping is the start, not the end. The senior concern here is being able to deploy *safely*, *observe* what real users experience, and *recover* when something breaks.
+
+### Decisions to make
+
+- **Hosting target** — a CDN-backed static host (Vercel / Netlify / Cloudflare Pages / S3 + CloudFront) with **SPA fallback** so deep links resolve to \`index.html\`.
+- **Caching strategy** — content-hashed assets cached immutably, \`index.html\` never cached.
+- **Release identity** — tag every release with the git SHA so you can tie an error back to the exact deploy.
+
+### What to implement
+
+- A **CI/CD pipeline** that runs the full gate on every PR and deploys on merge, ideally with **per-PR preview deployments** so reviewers click the actual change.
+- **Security headers at the host** — a strict Content-Security-Policy, \`frame-ancestors 'none'\` (clickjacking), HSTS, \`X-Content-Type-Options: nosniff\`. Drop public source maps (upload them privately to your error tracker) and \`grep\` the \`dist/\` to confirm no secrets shipped.
+- **A Lighthouse CI gate** tracking Core Web Vitals (LCP, INP, CLS) on a throttled mid-tier mobile profile — not your laptop. Self-host fonts with \`font-display: swap\` to avoid layout shift.
+- **Observability:** a **Sentry** error boundary that reports and shows a friendly fallback (not a white screen), source maps uploaded at build time, releases tagged by SHA, PII scrubbed in \`beforeSend\`, and **web-vitals** sent to your analytics so you see *real-user* performance, not just lab numbers.
+
+\`\`\`yaml
+# .github/workflows/ci.yml — no green check, no merge
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck    # tsc --noEmit
+      - run: pnpm lint
+      - run: pnpm test         # vitest --coverage
+      - run: pnpm build
+      - run: pnpm size-limit   # bundle budget gate
+      - run: pnpm exec playwright install --with-deps && pnpm e2e
+\`\`\`
+
+\`\`\`tsx
+// An error boundary that reports — never a white screen
+<Sentry.ErrorBoundary fallback={<FriendlyError />}>
+  <App />
+</Sentry.ErrorBoundary>
+\`\`\`
+
+**Recommended tools:** **GitHub Actions** + preview deploys (Vercel/Netlify/Cloudflare Pages); security headers + **CSP** at the CDN; **Lighthouse CI** + **web-vitals**; **Sentry** (errors + releases + source maps).
+
+## Phase 4 — Post-launch (ongoing operations)
+
+The phase teams forget to plan for — and the one that separates an app that survives growth from one that quietly accrues debt.
+
+- **Dependency hygiene:** weekly Renovate/Dependabot PRs, reviewed and merged promptly, so updates never pile into a risky big-bang upgrade.
+- **Scheduled audits:** re-run Lighthouse + axe on a cadence to catch regressions; review the Sentry error budget each cycle and triage the top issues.
+- **Bundle drift:** keep watching \`size-limit\` — bundles only grow unless someone is paying attention.
+- **Prune the dead weight:** \`knip\`/\`depcheck\` for unused exports and packages, plus a periodic license scan.
+- **Docs upkeep:** stale onboarding docs are worse than none. Keep the README and this playbook current as the stack moves.
+
+**Recommended tools:** **Renovate/Dependabot** (updates); **Lighthouse CI** + **axe** (scheduled audits); **knip**/**depcheck** (dead-code pruning); **Sentry** error-budget review.
+
+## If you can't do everything at once
+
+For the specific goal of *onboarding contributors safely*, implement in this order. Everything below line 6 can be layered in as the team and the stakes grow:
+
+1. **Pinned toolchain + onboarding docs** — removes friction immediately.
+2. **Locked dependencies (\`pnpm-lock.yaml\`)** — "works on my machine" disappears.
+3. **CI with branch protection** — the real enforcement layer.
+4. **Automated lint/format/typecheck** (ESLint + Prettier + \`tsc\` via pre-commit and CI).
+5. **Testing structure + a coverage guardrail** (Vitest + RTL, then Playwright).
+6. **Commit/PR conventions + CODEOWNERS.**
+7. Accessibility lint + performance budgets.
+8. Security headers/CSP + dependency automation.
+9. Observability (Sentry + web-vitals + error boundary).
+10. Lighthouse CI + scheduled audits.
+
+## A cohesive default stack
+
+Not gospel — a sensible starting point you adapt to your team's expertise:
+
+- **Build & deps:** Vite + pnpm + \`pnpm-lock.yaml\`
+- **Language:** TypeScript \`strict\` + type-aware ESLint
+- **Quality:** ESLint + Prettier + Husky/lint-staged/commitlint
+- **Routing:** React Router (or TanStack Router) with lazy routes
+- **Server state:** TanStack Query · **UI state:** Zustand
+- **Forms:** React Hook Form + Zod · **Styling:** Tailwind + Radix/shadcn
+- **Testing:** Vitest + RTL + Playwright + MSW
+- **CI/CD:** GitHub Actions + branch protection + preview deploys
+- **Security:** httpOnly cookies + CSP + DOMPurify + pnpm audit + Renovate
+- **Observability:** Sentry + web-vitals + error boundary
+
+## The takeaway
+
+Seniority shows up *before* the first component and *long after* the launch tweet. The work above isn't ceremony — each piece removes a class of future incident: the lock file kills "works on my machine," strict TS kills the \`any\` that breaks three screens, the size-limit gate kills the bundle that bloats on every PR, the validated env kills the white screen from a missing var. Plan the lifecycle, not just the feature, and the app stays cheap to change for years instead of expensive to rescue in months.`,
+    coverImage: '/images/project_lifecycle.png',
+    author: {
+      id: '1',
+      name: 'Er. Sharad Bhandari',
+      avatar: '/images/about-photo.jpg',
+    },
+    tags: [
+      { id: '1', name: 'React', slug: 'react' },
+      { id: '2', name: 'TypeScript', slug: 'typescript' },
+      { id: '24', name: 'Project Setup', slug: 'project-setup' },
+      { id: '22', name: 'Best Practices', slug: 'best-practices' },
+      { id: '23', name: 'DevOps', slug: 'devops' },
+      { id: '25', name: 'CI/CD', slug: 'ci-cd' },
+    ],
+    category: { id: '1', name: 'Frontend', slug: 'frontend' },
+    seo: {
+      title: "React + TypeScript Project Setup: A Senior Engineer's Lifecycle Playbook",
+      description:
+        'A senior engineer’s phase-by-phase playbook for setting up a production-ready React + TypeScript frontend: structure, Vite, pnpm, strict TypeScript, ESLint, TanStack Query, Vitest, Playwright, CI/CD, and observability.',
+      keywords: [
+        'react typescript project setup',
+        'react project structure',
+        'production-ready react app',
+        'react typescript best practices',
+        'how to structure a react project',
+        'frontend project lifecycle',
+        'senior frontend engineer react',
+        'vite pnpm typescript setup',
+        'eslint prettier react',
+        'tanstack query zustand',
+        'react ci cd pipeline',
+        'react project template',
+      ],
+    },
+    published: true,
+    publishedAt: '2026-06-24T09:00:00Z',
+    readingTime: 14,
+    views: 420,
+    createdAt: '2026-06-24T09:00:00Z',
+    updatedAt: '2026-06-24T09:00:00Z',
+  },
+  {
     id: '15',
     title: "Python Project Setup: A Senior Engineer's Lifecycle Playbook",
     slug: 'project-lifecycle-senior-engineer-playbook',
