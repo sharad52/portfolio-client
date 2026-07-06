@@ -47,6 +47,11 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course, index = 0, onEnr
       <span className="inline-flex items-center gap-1.5"><CalendarDays size={14} />{course.sessionsPerWeek}× / week</span>
     </div>
 
+    <div className="mt-4 rounded-2xl border border-line bg-white/[0.02] px-3.5 py-3 text-xs">
+      <p className="text-fg"><span className="text-fg-faint">Days:</span> {course.days}</p>
+      <p className="mt-1 text-fg"><span className="text-fg-faint">Time:</span> Morning 7–8 AM or Evening 7–8 PM</p>
+    </div>
+
     <ul className="mt-5 space-y-2">
       {course.highlights.map((h) => (
         <li key={h} className="flex items-start gap-2 text-sm text-fg-muted">

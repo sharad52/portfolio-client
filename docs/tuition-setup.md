@@ -72,16 +72,21 @@ Everything below is done by **you**, once. It takes ~10 minutes. No coding.
 - Push to `main` (your normal deploy) or run `npm run build`. Done — enrolments
   now land in your **Python Enrollments** sheet and your inbox.
 
-### 6. Fill in your real courses & batches
+### 6. Fill in your real courses & timings
 Edit [`src/content/site.ts`](../src/content/site.ts):
-- **`courses`** — title, level, summary, duration, sessions/week, `price`
+- **`courses`** — title, level, summary, duration, `sessionsPerWeek`, `price`
   (display only — no payment is taken), highlights, and an `icon` (lucide key:
   `code`, `boxes`, `server`, `terminal`, `graduation`, `sparkles`, `database`,
-  `zap`, …).
-- **`batches`** — label, schedule, start date, seat count, and `status`
-  (`open` | `filling` | `closed`). Mark a batch `closed` once it fills — it
-  then shows as *Full* and can't be picked in the enrol form. **Seat counts are
-  tracked by you, by hand, against the Enrollments sheet.**
+  `zap`, …). Each course also has:
+  - **`days`** — the weekdays it meets, e.g. `'Sun / Tue / Thu'`. Split days
+    across the week so courses never clash (the samples use Beginner 3 days,
+    DSA 2 days, Backend 2 days = one full week, no overlap).
+  - **`startDate`**, **`seats`** (capacity), and **`status`**
+    (`open` | `filling` | `closed`). Set a course `closed` once it fills — it
+    shows as *Full*. **Seats are tracked by you, by hand, against the sheet.**
+- **`batches`** — the two **shared time slots** every course offers
+  (Morning `7:00–8:00 AM`, Evening `7:00–8:00 PM`). Same times for all courses;
+  only the days differ. Edit these once to change the class times site-wide.
 
 ---
 

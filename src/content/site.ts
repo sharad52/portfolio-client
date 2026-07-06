@@ -326,23 +326,38 @@ export type Course = {
   level: 'Beginner' | 'Intermediate' | 'Advanced';
   summary: string;
   duration: string;        // e.g. '8 weeks'
-  sessionsPerWeek: number;
+  sessionsPerWeek: number; // classes per week — matches the number of days below
+  days: string;            // weekdays this course meets, e.g. 'Sun / Tue / Thu'
+  startDate: string;       // ISO date, e.g. '2026-08-01'
+  seats: number;           // capacity — track fills manually in the Sheet
+  status: 'open' | 'filling' | 'closed';
   price: string;           // display only — e.g. 'Rs. 8,000'
   highlights: string[];
   icon: string;            // lucide key resolved by <Icon />
   popular?: boolean;
 };
 
+/**
+ * The two daily time slots — SHARED by every course. Students pick morning or
+ * evening; the day-of-week differs per course (see `days` above) so no two
+ * courses ever run at the same time. Same times everywhere, no collisions.
+ */
 export type Batch = {
-  id: string;
-  label: string;           // e.g. 'August 2026 — Morning'
-  schedule: string;        // e.g. 'Mon / Wed / Fri · 7:00–8:00 AM (NPT)'
-  startDate: string;       // ISO date, e.g. '2026-08-01'
-  seats: number;           // capacity — track fills manually in the Sheet
-  status: 'open' | 'filling' | 'closed';
+  id: string;              // 'morning' | 'evening'
+  label: string;           // 'Morning batch'
+  time: string;            // '7:00–8:00 AM (NPT)'
 };
 
-/** Course catalogue — replace the sample copy with your real offerings. */
+export const batches: Batch[] = [
+  { id: 'morning', label: 'Morning batch', time: '7:00–8:00 AM (NPT)' },
+  { id: 'evening', label: 'Evening batch', time: '7:00–8:00 PM (NPT)' },
+];
+
+/**
+ * Course catalogue — replace the sample copy (days, dates, prices, seats) with
+ * your real offerings. Days are split across the week so courses never clash:
+ * Beginner (3d) · DSA (2d) · Backend (2d) = one full week, no overlap.
+ */
 export const courses: Course[] = [
   {
     slug: 'python-foundations',
@@ -352,6 +367,10 @@ export const courses: Course[] = [
       'Go from zero to writing real Python programs — syntax, logic, and problem-solving, taught live with hands-on practice every session.',
     duration: '8 weeks',
     sessionsPerWeek: 3,
+    days: 'Sun / Tue / Thu',
+    startDate: '2026-08-01',
+    seats: 8,
+    status: 'open',
     price: 'Rs. 8,000',
     highlights: ['Live, small-group sessions', 'Hands-on mini-projects', 'Session recordings provided'],
     icon: 'code',
@@ -365,6 +384,10 @@ export const courses: Course[] = [
       'Master the data structures and algorithmic thinking behind interviews and real software — arrays, maps, recursion, trees, and complexity.',
     duration: '10 weeks',
     sessionsPerWeek: 2,
+    days: 'Mon / Wed',
+    startDate: '2026-08-03',
+    seats: 8,
+    status: 'open',
     price: 'Rs. 12,000',
     highlights: ['Interview-style problems', 'Weekly practice sets', 'Code reviews on your solutions'],
     icon: 'boxes',
@@ -377,29 +400,13 @@ export const courses: Course[] = [
       'Build and ship real APIs and web backends with Django & FastAPI — databases, auth, REST design, and deploying to the cloud.',
     duration: '12 weeks',
     sessionsPerWeek: 2,
+    days: 'Fri / Sat',
+    startDate: '2026-08-01',
+    seats: 6,
+    status: 'filling',
     price: 'Rs. 18,000',
     highlights: ['Build a production-style API', 'PostgreSQL, auth & testing', 'Deployment with Docker'],
     icon: 'server',
-  },
-];
-
-/** Named batches with capacity — mark a batch 'closed' here once it fills. */
-export const batches: Batch[] = [
-  {
-    id: 'aug-2026-morning',
-    label: 'August 2026 — Morning',
-    schedule: 'Mon / Wed / Fri · 7:00–8:00 AM (NPT)',
-    startDate: '2026-08-01',
-    seats: 8,
-    status: 'open',
-  },
-  {
-    id: 'aug-2026-evening',
-    label: 'August 2026 — Evening',
-    schedule: 'Tue / Thu / Sat · 7:00–8:00 PM (NPT)',
-    startDate: '2026-08-05',
-    seats: 8,
-    status: 'filling',
   },
 ];
 
