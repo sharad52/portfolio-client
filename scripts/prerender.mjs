@@ -183,9 +183,56 @@ async function main() {
     })),
   };
 
+  const tuitionTitle = 'Learn Python Online — Python Classes & Coaching in Kathmandu, Nepal';
+  const tuitionDesc =
+    'Learn Python online with live, small-group coaching from Sharad Bhandari — a senior software engineer in Kathmandu, Nepal with 7+ years’ experience. Python classes for beginners through to backend development (Django, FastAPI). Enroll free for the next batch — no payment needed.';
+  const tuitionKeywords =
+    'Python online coaching, learn Python online, Python classes in Kathmandu, Python tuition in Nepal, ' +
+    'Python programming course Nepal, online Python classes Nepal, Python for beginners, learn to code Nepal, ' +
+    'Python coaching Kathmandu, Django FastAPI course, Python bootcamp Nepal, coding classes Kathmandu, ' +
+    'Python instructor Nepal, live Python classes online, Python training Nepal';
+  const tuitionProvider = {
+    '@type': 'Person',
+    name: 'Sharad Bhandari',
+    url: SITE_URL,
+    jobTitle: 'Senior Software Engineer & Python Instructor',
+    address: { '@type': 'PostalAddress', addressLocality: 'Kathmandu', addressCountry: 'NP' },
+  };
+  // Array of schema.org objects rendered in one JSON-LD block: a Course and a
+  // locality-tagged Service, so "Python coaching / classes in Kathmandu, Nepal"
+  // is understood by search engines.
+  const tuitionLd = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Course',
+      name: 'Python Programming Classes & Coaching',
+      description: tuitionDesc,
+      inLanguage: ['en', 'ne'],
+      provider: tuitionProvider,
+      hasCourseInstance: {
+        '@type': 'CourseInstance',
+        courseMode: 'online',
+        location: { '@type': 'VirtualLocation', url: `${SITE_URL}/tuition` },
+      },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Service',
+      serviceType: 'Python programming coaching & tuition',
+      provider: tuitionProvider,
+      areaServed: [
+        { '@type': 'City', name: 'Kathmandu' },
+        { '@type': 'Country', name: 'Nepal' },
+        'Worldwide (online)',
+      ],
+      url: `${SITE_URL}/tuition`,
+    },
+  ];
+
   const STATIC_ROUTES = [
     { path: 'projects', title: 'Work — Sharad Bhandari', h1: 'Selected work by Sharad Bhandari', description: 'Selected projects and engineering work by Sharad Bhandari, Senior Software Engineer.' },
     { path: 'experience', title: 'Experience — Sharad Bhandari', h1: 'Experience — Sharad Bhandari', description: 'Professional experience and career journey of Sharad Bhandari, Senior Software Engineer.' },
+    { path: 'tuition', title: tuitionTitle, h1: 'Learn Python online — coaching & classes in Kathmandu, Nepal', description: tuitionDesc, keywords: tuitionKeywords, ld: tuitionLd },
     { path: 'blog', title: 'Writing — Sharad Bhandari', h1: 'Writing by Sharad Bhandari', description: 'Articles and notes on software engineering, architecture, and building for the web by Sharad Bhandari.', ld: blogLd },
     { path: 'contact', title: contactTitle, h1: 'Hire a Senior Software Engineer in Nepal', description: 'Hire Sharad Bhandari — senior software engineer & Python / backend developer in Kathmandu, Nepal. Available for full-time, freelance, contract and remote roles worldwide.', ld: contactLd },
   ];
@@ -194,7 +241,7 @@ async function main() {
   const homeBody = bodyHtml(
     'Sharad Bhandari',
     'Senior Software Engineer & backend developer based in Kathmandu, Nepal. 7+ years building scalable, cloud-ready systems, APIs and async architectures.',
-    `\n      <nav aria-label="Primary">\n        <a href="/projects">Work</a>\n        <a href="/experience">Experience</a>\n        <a href="/blog">Writing</a>\n        <a href="/contact">Contact</a>\n      </nav>`,
+    `\n      <nav aria-label="Primary">\n        <a href="/projects">Work</a>\n        <a href="/experience">Experience</a>\n        <a href="/tuition">Learn Python with Me</a>\n        <a href="/blog">Writing</a>\n        <a href="/contact">Contact</a>\n      </nav>`,
   );
   await writeFile(templatePath, injectBody(template, homeBody), 'utf8');
 
@@ -202,6 +249,7 @@ async function main() {
     const html = applyMeta(template, {
       title: r.title,
       description: r.description,
+      keywords: r.keywords,
       url: `${SITE_URL}/${r.path}`,
       image: FALLBACK_IMAGE,
       ogType: 'website',
@@ -283,6 +331,7 @@ async function main() {
     urlEntry(`${SITE_URL}/`, { priority: '1.0', image: { loc: FALLBACK_IMAGE, title: 'Sharad Bhandari — Senior Software Engineer' } }),
     urlEntry(`${SITE_URL}/projects`, { priority: '0.8' }),
     urlEntry(`${SITE_URL}/experience`, { priority: '0.8' }),
+    urlEntry(`${SITE_URL}/tuition`, { changefreq: 'weekly', priority: '0.8' }),
     urlEntry(`${SITE_URL}/blog`, { changefreq: 'weekly', priority: '0.7' }),
     urlEntry(`${SITE_URL}/contact`, { changefreq: 'yearly', priority: '0.6' }),
     ...MOCK_POSTS.filter((p) => p.published !== false).map((p) =>

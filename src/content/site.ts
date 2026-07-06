@@ -45,13 +45,14 @@ export const socials = [
   { label: 'Email', href: `mailto:${profile.email}`, icon: 'mail' },
 ] as const;
 
-export const navItems = [
+export const navItems: readonly { label: string; path: string; highlight?: boolean }[] = [
   { label: 'Home', path: '/' },
   { label: 'Work', path: '/projects' },
   { label: 'Experience', path: '/experience' },
+  { label: 'Learn Python with Me', path: '/tuition', highlight: true },
   { label: 'Writing', path: '/blog' },
   { label: 'Contact', path: '/contact' },
-] as const;
+];
 
 /** Headline stats — all sourced from the CV. */
 export const stats = [
@@ -309,6 +310,98 @@ export const interests = [
   'Research interests: AI, data-intensive applications, cloud-native design',
   'College cricket team captain — intra-college champions',
 ] as const;
+
+/* ─────────────────────────────────────────────────────────────────────────
+ *  PYTHON TUITION — online class catalogue
+ * ─────────────────────────────────────────────────────────────────────────
+ *  Everything the /tuition page shows lives here. Edit courses & batches,
+ *  and the page + enrollment form update automatically. No payment is taken
+ *  online — enrolments land in a Google Sheet + email, and you follow up to
+ *  arrange the seat and payment. See docs/tuition-setup.md.
+ * ───────────────────────────────────────────────────────────────────────── */
+
+export type Course = {
+  slug: string;
+  title: string;
+  level: 'Beginner' | 'Intermediate' | 'Advanced';
+  summary: string;
+  duration: string;        // e.g. '8 weeks'
+  sessionsPerWeek: number;
+  price: string;           // display only — e.g. 'Rs. 8,000'
+  highlights: string[];
+  icon: string;            // lucide key resolved by <Icon />
+  popular?: boolean;
+};
+
+export type Batch = {
+  id: string;
+  label: string;           // e.g. 'August 2026 — Morning'
+  schedule: string;        // e.g. 'Mon / Wed / Fri · 7:00–8:00 AM (NPT)'
+  startDate: string;       // ISO date, e.g. '2026-08-01'
+  seats: number;           // capacity — track fills manually in the Sheet
+  status: 'open' | 'filling' | 'closed';
+};
+
+/** Course catalogue — replace the sample copy with your real offerings. */
+export const courses: Course[] = [
+  {
+    slug: 'python-foundations',
+    title: 'Python for Beginners',
+    level: 'Beginner',
+    summary:
+      'Go from zero to writing real Python programs — syntax, logic, and problem-solving, taught live with hands-on practice every session.',
+    duration: '8 weeks',
+    sessionsPerWeek: 3,
+    price: 'Rs. 8,000',
+    highlights: ['Live, small-group sessions', 'Hands-on mini-projects', 'Session recordings provided'],
+    icon: 'code',
+    popular: true,
+  },
+  {
+    slug: 'dsa-problem-solving',
+    title: 'Data Structures & Problem Solving',
+    level: 'Intermediate',
+    summary:
+      'Master the data structures and algorithmic thinking behind interviews and real software — arrays, maps, recursion, trees, and complexity.',
+    duration: '10 weeks',
+    sessionsPerWeek: 2,
+    price: 'Rs. 12,000',
+    highlights: ['Interview-style problems', 'Weekly practice sets', 'Code reviews on your solutions'],
+    icon: 'boxes',
+  },
+  {
+    slug: 'backend-django-fastapi',
+    title: 'Backend Development with Python',
+    level: 'Advanced',
+    summary:
+      'Build and ship real APIs and web backends with Django & FastAPI — databases, auth, REST design, and deploying to the cloud.',
+    duration: '12 weeks',
+    sessionsPerWeek: 2,
+    price: 'Rs. 18,000',
+    highlights: ['Build a production-style API', 'PostgreSQL, auth & testing', 'Deployment with Docker'],
+    icon: 'server',
+  },
+];
+
+/** Named batches with capacity — mark a batch 'closed' here once it fills. */
+export const batches: Batch[] = [
+  {
+    id: 'aug-2026-morning',
+    label: 'August 2026 — Morning',
+    schedule: 'Mon / Wed / Fri · 7:00–8:00 AM (NPT)',
+    startDate: '2026-08-01',
+    seats: 8,
+    status: 'open',
+  },
+  {
+    id: 'aug-2026-evening',
+    label: 'August 2026 — Evening',
+    schedule: 'Tue / Thu / Sat · 7:00–8:00 PM (NPT)',
+    startDate: '2026-08-05',
+    seats: 8,
+    status: 'filling',
+  },
+];
 
 export const seo = {
   siteUrl: 'https://sharadbhandari.com.np',

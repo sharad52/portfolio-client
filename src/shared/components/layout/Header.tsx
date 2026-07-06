@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Menu, X, CalendarClock } from 'lucide-react';
+import { Menu, X, CalendarClock, GraduationCap } from 'lucide-react';
+
+/** Emerald→teal gradient used for the highlighted "Learn Python with Me" nav CTA. */
+const CLASS_CTA_GRADIENT = 'linear-gradient(110deg,#3f7d68,#4f9a7e 55%,#88adb5)';
 import { navItems } from '@/content/site';
 import { buildMeetingLink } from '@/features/contact/services/contactService';
 import { Brand } from './Brand';
@@ -35,6 +38,29 @@ export const Header: React.FC = () => {
         <nav className="hidden items-center gap-1 md:flex">
           {navItems.map((item) => {
             const active = pathname === item.path;
+
+            // Highlighted item — renders as an attention-grabbing gradient pill
+            // with a gentle "breathing" glow, so the eye lands on it.
+            if (item.highlight) {
+              return (
+                <motion.div
+                  key={item.path}
+                  animate={{ scale: [1, 1.05, 1] }}
+                  transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
+                  className="mx-1"
+                >
+                  <Link
+                    to={item.path}
+                    className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium text-white shadow-glow transition-transform hover:-translate-y-0.5"
+                    style={{ backgroundImage: CLASS_CTA_GRADIENT }}
+                  >
+                    <GraduationCap size={15} />
+                    {item.label}
+                  </Link>
+                </motion.div>
+              );
+            }
+
             return (
               <Link
                 key={item.path}
@@ -86,17 +112,29 @@ export const Header: React.FC = () => {
             transition={{ duration: 0.25 }}
             className="glass-strong mx-3 mt-2 overflow-hidden rounded-3xl p-3 md:hidden"
           >
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`block rounded-2xl px-4 py-3 text-base transition-colors ${
-                  pathname === item.path ? 'bg-white/[0.06] text-fg' : 'text-fg-muted hover:bg-white/[0.04] hover:text-fg'
-                }`}
-              >
-                {item.label}
-              </Link>
-            ))}
+            {navItems.map((item) =>
+              item.highlight ? (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className="my-1 flex items-center gap-2 rounded-2xl px-4 py-3 text-base font-medium text-white shadow-glow"
+                  style={{ backgroundImage: CLASS_CTA_GRADIENT }}
+                >
+                  <GraduationCap size={18} />
+                  {item.label}
+                </Link>
+              ) : (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`block rounded-2xl px-4 py-3 text-base transition-colors ${
+                    pathname === item.path ? 'bg-white/[0.06] text-fg' : 'text-fg-muted hover:bg-white/[0.04] hover:text-fg'
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ),
+            )}
             <a
               href={buildMeetingLink()}
               target="_blank"
