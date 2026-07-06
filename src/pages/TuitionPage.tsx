@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { CalendarDays, Users, Wifi, Video, BadgeCheck, Check } from 'lucide-react';
-import { profile, seo, courses, batches } from '@/content/site';
+import { profile, seo, courses } from '@/content/site';
 import type { Course } from '@/features/tuition/types';
 import { CourseCard } from '@/features/tuition/components/CourseCard';
 import { EnrollDialog } from '@/features/tuition/components/EnrollDialog';
@@ -128,13 +128,13 @@ const faqLd = {
   })),
 };
 
-const STATUS_STYLE: Record<(typeof batches)[number]['status'], string> = {
+const STATUS_STYLE: Record<Course['status'], string> = {
   open: 'text-emerald-300 border-emerald-400/30 bg-emerald-400/10',
   filling: 'text-amber-300 border-amber-400/30 bg-amber-400/10',
   closed: 'text-fg-faint border-line bg-white/[0.03]',
 };
 
-const STATUS_LABEL: Record<(typeof batches)[number]['status'], string> = {
+const STATUS_LABEL: Record<Course['status'], string> = {
   open: 'Enrolling now',
   filling: 'Filling fast',
   closed: 'Full',
@@ -245,27 +245,32 @@ export const TuitionPage: React.FC = () => {
             ))}
           </div>
 
-          {/* Batches */}
+          {/* Schedule — same times for everyone (7–8 AM / PM), different days per
+              course so nothing ever clashes. */}
           <Reveal>
             <div className="mt-16 rounded-3xl border border-line bg-white/[0.03] p-6 backdrop-blur-xl sm:p-8">
-              <h2 className="font-display text-2xl font-semibold text-fg">Upcoming batches</h2>
+              <h2 className="font-display text-2xl font-semibold text-fg">Class schedule</h2>
               <p className="mt-2 text-sm text-fg-muted">
-                Every course runs in these batches. Seats are limited — pick one when you enroll.
+                Every class runs <strong className="text-fg">7–8 AM</strong> or{' '}
+                <strong className="text-fg">7–8 PM</strong> (NPT) — pick whichever suits you. Each course
+                meets on its own days, so courses never overlap. Seats are limited.
               </p>
               <div className="mt-6 space-y-3">
-                {batches.map((b) => (
+                {courses.map((c) => (
                   <div
-                    key={b.id}
-                    className="flex flex-col gap-2 rounded-2xl border border-line bg-white/[0.02] p-4 sm:flex-row sm:items-center sm:justify-between"
+                    key={c.slug}
+                    className="flex flex-col gap-3 rounded-2xl border border-line bg-white/[0.02] p-4 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div>
-                      <p className="font-medium text-fg">{b.label}</p>
-                      <p className="text-sm text-fg-muted">{b.schedule}</p>
+                      <p className="font-medium text-fg">{c.title}</p>
+                      <p className="text-sm text-fg-muted">
+                        {c.days} · {c.sessionsPerWeek}× / week — Morning or Evening (7–8)
+                      </p>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="text-xs text-fg-faint">{b.seats} seats</span>
-                      <span className={`rounded-full border px-3 py-1 text-xs font-medium ${STATUS_STYLE[b.status]}`}>
-                        {STATUS_LABEL[b.status]}
+                      <span className="text-xs text-fg-faint">{c.seats} seats</span>
+                      <span className={`rounded-full border px-3 py-1 text-xs font-medium ${STATUS_STYLE[c.status]}`}>
+                        {STATUS_LABEL[c.status]}
                       </span>
                     </div>
                   </div>
