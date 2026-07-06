@@ -3,6 +3,7 @@ import { motion, useInView, useScroll, useSpring, useMotionValue, useTransform, 
 import {
   Server, Cloud, LayoutGrid, Users, Github, Linkedin, Mail, ArrowRight,
   Zap, Workflow, Database, Network, Facebook, Instagram,
+  Code2, Boxes, Terminal, GraduationCap, Sparkles,
   type LucideIcon,
 } from 'lucide-react';
 import { type IconType } from 'react-icons';
@@ -22,6 +23,11 @@ const ICONS: Record<string, LucideIcon> = {
   zap: Zap,
   workflow: Workflow,
   database: Database,
+  code: Code2,
+  boxes: Boxes,
+  terminal: Terminal,
+  graduation: GraduationCap,
+  sparkles: Sparkles,
   github: Github,
   linkedin: Linkedin,
   facebook: Facebook,
