@@ -1,4 +1,5 @@
 import { profile } from '@/content/site';
+import { getApproxLocation, formatLocation, type ApproxLocation } from '@/shared/utils/location';
 import type { ContactFormData } from '../types';
 
 /**
@@ -68,41 +69,6 @@ export function whatsAppFromForm(data: ContactFormData): string {
 export const isFormConfigured = (): boolean => Boolean(GOOGLE_SCRIPT_URL || WEB3FORMS_KEY);
 
 export type SubmitResult = { ok: true } | { ok: false; error: string };
-
-interface ApproxLocation {
-  ip: string;
-  city: string;
-  region: string;
-  country: string;
-}
-
-/**
- * Best-effort approximate location from the sender's IP — no permission prompt,
- * no extra form fields. Uses ipapi.co (free, keyless, HTTPS). Returns null on
- * any failure so submission proceeds without location.
- */
-async function getApproxLocation(): Promise<ApproxLocation | null> {
-  try {
-    const res = await fetch('https://ipapi.co/json/');
-    if (!res.ok) return null;
-    const j = await res.json();
-    if (!j || j.error) return null;
-    return {
-      ip: j.ip || '',
-      city: j.city || '',
-      region: j.region || '',
-      country: j.country_name || j.country || '',
-    };
-  } catch {
-    return null;
-  }
-}
-
-/** Human-readable "City, Region, Country" from an approximate location. */
-function formatLocation(loc: ApproxLocation | null): string {
-  if (!loc) return '';
-  return [loc.city, loc.region, loc.country].filter(Boolean).join(', ');
-}
 
 /** Submit to a Google Apps Script web app (saves to a Sheet + emails you). */
 async function submitToGoogleSheet(data: ContactFormData, loc: ApproxLocation | null): Promise<SubmitResult> {

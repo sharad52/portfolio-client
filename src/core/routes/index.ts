@@ -9,6 +9,7 @@ export const ROUTES = {
   BLOG_TAG: '/blog/tag/:tag',
   EXPERIENCE: '/experience',
   SKILLS: '/skills',
+  TUITION: '/tuition',
   CONTACT: '/contact',
   ADMIN: '/admin',
   ADMIN_BLOG: '/admin/blog',

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ArrowDown, MapPin, Sparkles, CalendarClock } from 'lucide-react';
+import { ArrowRight, ArrowDown, MapPin, Sparkles, CalendarClock, GraduationCap } from 'lucide-react';
 import { profile, socials, techMarquee } from '@/content/site';
 import { buildMeetingLink } from '@/features/contact/services/contactService';
 import { AuroraBackground, Icon, MagneticButton, Marquee } from '@/shared/components/ui';
@@ -88,6 +88,16 @@ export const Hero: React.FC = () => {
               <Link to="/projects" className="btn-primary">
                 View my work
                 <ArrowRight size={18} />
+              </Link>
+            </MagneticButton>
+            <MagneticButton>
+              <Link
+                to="/tuition"
+                className="btn-primary"
+                style={{ backgroundImage: 'linear-gradient(110deg,#3f7d68,#4f9a7e 55%,#88adb5)' }}
+              >
+                <GraduationCap size={18} />
+                Join a class
               </Link>
             </MagneticButton>
             <MagneticButton>
