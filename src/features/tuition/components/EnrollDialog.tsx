@@ -9,8 +9,8 @@ import type { Course, EnrollmentFormData } from '../types';
 
 const LEVELS = ['Complete beginner', 'Some basics', 'Comfortable', 'Experienced'] as const;
 
-/** First batch that can still take enrolments — used as the default selection. */
-const firstOpenBatchId = batches.find((b) => b.status !== 'closed')?.id ?? '';
+/** Default time slot (morning) — every course offers the same two slots. */
+const defaultBatchId = batches[0]?.id ?? '';
 
 interface EnrollDialogProps {
   course: Course | null;
@@ -19,7 +19,7 @@ interface EnrollDialogProps {
 
 export const EnrollDialog: React.FC<EnrollDialogProps> = ({ course, onClose }) => {
   const [form, setForm] = useState<EnrollmentFormData>({
-    name: '', email: '', phone: '', courseSlug: '', batchId: firstOpenBatchId, currentLevel: '', goals: '',
+    name: '', email: '', phone: '', courseSlug: '', batchId: defaultBatchId, currentLevel: '', goals: '',
   });
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const [error, setError] = useState<string | null>(null);
@@ -129,7 +129,9 @@ export const EnrollDialog: React.FC<EnrollDialogProps> = ({ course, onClose }) =
                   <Field label="Email" name="email" type="email" value={form.email} onChange={onChange} required placeholder="you@example.com" />
 
                   <div>
-                    <label htmlFor="batchId" className="mb-2 block text-sm text-fg-muted">Preferred batch *</label>
+                    <label htmlFor="batchId" className="mb-2 block text-sm text-fg-muted">
+                      Preferred time * <span className="text-fg-faint">· {course.days}</span>
+                    </label>
                     <select
                       id="batchId"
                       name="batchId"
@@ -139,8 +141,8 @@ export const EnrollDialog: React.FC<EnrollDialogProps> = ({ course, onClose }) =
                       className="w-full rounded-2xl border border-line bg-white/[0.03] px-4 py-3 text-fg focus:border-accent/50 focus:outline-none focus:ring-2 focus:ring-accent/20"
                     >
                       {batches.map((b) => (
-                        <option key={b.id} value={b.id} disabled={b.status === 'closed'} className="bg-base text-fg">
-                          {b.label} — {b.schedule}{b.status === 'closed' ? ' (full)' : b.status === 'filling' ? ' (filling fast)' : ''}
+                        <option key={b.id} value={b.id} className="bg-base text-fg">
+                          {b.label} — {course.days} · {b.time}
                         </option>
                       ))}
                     </select>

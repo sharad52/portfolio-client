@@ -30,8 +30,14 @@ export type SubmitResult = { ok: true } | { ok: false; error: string };
 
 /** Resolve human-readable course & batch labels from their ids. */
 function resolveLabels(data: EnrollmentFormData): { course: string; batch: string } {
-  const course = courses.find((c) => c.slug === data.courseSlug)?.title || data.courseSlug;
-  const batch = batches.find((b) => b.id === data.batchId)?.label || data.batchId;
+  const courseObj = courses.find((c) => c.slug === data.courseSlug);
+  const slot = batches.find((b) => b.id === data.batchId);
+  const course = courseObj?.title || data.courseSlug;
+  // The slot gives the time; the course gives the days — combine into the full
+  // schedule so the email / sheet records exactly when the class meets.
+  const batch = slot
+    ? `${slot.label} — ${courseObj ? `${courseObj.days} · ` : ''}${slot.time}`
+    : data.batchId;
   return { course, batch };
 }
 
