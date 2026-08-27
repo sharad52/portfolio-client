@@ -2,6 +2,8 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Clock, CalendarDays, Check, ArrowRight } from 'lucide-react';
 import { Icon } from '@/shared/components/ui';
+import { formatIsoDate } from '@/shared/utils/helpers';
+import { intakes } from '@/content/site';
 import type { Course } from '../types';
 
 interface CourseCardProps {
@@ -25,11 +27,22 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course, index = 0, onEnr
     whileHover={{ y: -6 }}
     className="group relative flex h-full flex-col rounded-3xl border border-line bg-white/[0.03] p-7 backdrop-blur-xl transition-colors hover:border-white/20"
   >
-    {course.popular && (
-      <span className="absolute right-6 top-6 rounded-full border border-accent/40 bg-accent/15 px-3 py-1 text-xs font-medium text-fg">
-        Most popular
-      </span>
-    )}
+    <div className="absolute right-6 top-6 flex flex-col items-end gap-2">
+      {course.runningNow && (
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-200">
+          <span className="relative flex h-1.5 w-1.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
+          </span>
+          Running now
+        </span>
+      )}
+      {course.popular && (
+        <span className="rounded-full border border-accent/40 bg-accent/15 px-3 py-1 text-xs font-medium text-fg">
+          Most popular
+        </span>
+      )}
+    </div>
 
     <span className="grid h-12 w-12 place-items-center rounded-2xl border border-line bg-white/[0.04] text-accent-cyan">
       <Icon name={course.icon} size={22} />
@@ -50,6 +63,20 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course, index = 0, onEnr
     <div className="mt-4 rounded-2xl border border-line bg-white/[0.02] px-3.5 py-3 text-xs">
       <p className="text-fg"><span className="text-fg-faint">Days:</span> {course.days}</p>
       <p className="mt-1 text-fg"><span className="text-fg-faint">Time:</span> Morning 7–8 AM or Evening 7–8 PM</p>
+
+      <div className="mt-3 space-y-1.5 border-t border-line pt-3">
+        {course.runningNow && (
+          <p className="flex items-center gap-1.5 text-emerald-200">
+            <span className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-emerald-400" />
+            {intakes.current.label} batch in progress
+          </p>
+        )}
+        <p className="text-fg">
+          <span className="text-fg-faint">Enrolling for:</span>{' '}
+          <strong className="font-medium text-accent-cyan">{intakes.next.label}</strong>
+          <span className="text-fg-faint"> — starts {formatIsoDate(course.startDate, 'EEE, d MMM')}</span>
+        </p>
+      </div>
     </div>
 
     <ul className="mt-5 space-y-2">
@@ -70,7 +97,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course, index = 0, onEnr
         onClick={() => onEnroll(course)}
         className="btn-primary text-sm"
       >
-        Enroll <ArrowRight size={16} />
+        Enroll for {intakes.next.short} <ArrowRight size={16} />
       </button>
     </div>
   </motion.article>
