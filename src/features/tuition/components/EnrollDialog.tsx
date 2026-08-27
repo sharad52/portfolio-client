@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { X, Send, Loader2, CheckCircle2, MessageCircle } from 'lucide-react';
-import { batches } from '@/content/site';
+import { X, Send, Loader2, CheckCircle2, MessageCircle, CalendarClock } from 'lucide-react';
+import { batches, intakes } from '@/content/site';
+import { formatIsoDate } from '@/shared/utils/helpers';
 import {
   submitEnrollment, whatsAppFromEnrollment, isEnrollmentConfigured,
 } from '../services/enrollmentService';
@@ -107,8 +108,10 @@ export const EnrollDialog: React.FC<EnrollDialogProps> = ({ course, onClose }) =
                 </span>
                 <h3 className="font-display text-2xl font-semibold text-fg">You're on the list!</h3>
                 <p className="mt-2 max-w-sm text-fg-muted">
-                  Thanks for enrolling in <strong className="text-fg">{course.title}</strong>. I'll be in
-                  touch shortly to confirm your seat and share the payment details.
+                  Thanks for enrolling in <strong className="text-fg">{course.title}</strong> for the{' '}
+                  <strong className="text-fg">{intakes.next.label}</strong> batch, starting{' '}
+                  {formatIsoDate(course.startDate, 'EEEE, d MMMM yyyy')}. I'll be in touch shortly to confirm
+                  your seat and share the payment details.
                 </p>
                 <button onClick={onClose} className="btn-ghost mt-6 text-sm">Done</button>
               </div>
@@ -121,6 +124,22 @@ export const EnrollDialog: React.FC<EnrollDialogProps> = ({ course, onClose }) =
                   WhatsApp or email.
                 </p>
 
+                {/* Which intake this enrolment is for — the running batch is already
+                    mid-course, so new enrolments join the next one. */}
+                <div className="mt-5 rounded-2xl border border-accent-cyan/30 bg-accent-cyan/[0.08] p-4">
+                  <p className="flex items-center gap-2 text-sm font-medium text-fg">
+                    <CalendarClock size={16} className="flex-shrink-0 text-accent-cyan" />
+                    You're enrolling for the {intakes.next.label} batch
+                  </p>
+                  <p className="mt-2 text-sm text-fg-muted">
+                    The <strong className="text-fg">{intakes.current.label}</strong> batch is already
+                    running, so this reserves your seat in the next intake —{' '}
+                    <strong className="text-fg">{course.title}</strong> starts{' '}
+                    <strong className="text-fg">{formatIsoDate(course.startDate, 'EEEE, d MMMM yyyy')}</strong>{' '}
+                    ({course.days}).
+                  </p>
+                </div>
+
                 <form onSubmit={handleSubmit} className="mt-6 space-y-4">
                   <div className="grid gap-4 sm:grid-cols-2">
                     <Field label="Full name" name="name" value={form.name} onChange={onChange} required placeholder="Your name" />
@@ -130,7 +149,7 @@ export const EnrollDialog: React.FC<EnrollDialogProps> = ({ course, onClose }) =
 
                   <div>
                     <label htmlFor="batchId" className="mb-2 block text-sm text-fg-muted">
-                      Preferred time * <span className="text-fg-faint">· {course.days}</span>
+                      Preferred time * <span className="text-fg-faint">· {intakes.next.label} · {course.days}</span>
                     </label>
                     <select
                       id="batchId"
