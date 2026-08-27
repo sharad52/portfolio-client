@@ -137,7 +137,9 @@ async function main() {
   const { MOCK_POSTS } = await import(postsModUrl);
 
   // site.ts is pure data (no runtime imports) → Node can import it directly.
-  const { profile } = await import(pathToFileURL(join(root, 'src/content/site.ts')).href);
+  const { profile, intakes, courses } = await import(
+    pathToFileURL(join(root, 'src/content/site.ts')).href
+  );
 
   let count = 0;
 
@@ -185,7 +187,8 @@ async function main() {
 
   const tuitionTitle = 'Learn Python Online — Python Classes & Coaching in Kathmandu, Nepal';
   const tuitionDesc =
-    'Learn Python online with live, small-group coaching from Sharad Bhandari — a senior software engineer in Kathmandu, Nepal with 7+ years’ experience. Python classes for beginners through to backend development (Django, FastAPI). Enroll free for the next batch — no payment needed.';
+    'Learn Python online with live, small-group coaching from Sharad Bhandari — a senior software engineer in Kathmandu, Nepal with 7+ years’ experience. Python classes for beginners through to backend development (Django, FastAPI). ' +
+    `The ${intakes.current.label} batch is running now — enroll free for the ${intakes.next.label} batch, no payment needed.`;
   const tuitionKeywords =
     'Python online coaching, learn Python online, Python classes in Kathmandu, Python tuition in Nepal, ' +
     'Python programming course Nepal, online Python classes Nepal, Python for beginners, learn to code Nepal, ' +
@@ -212,6 +215,8 @@ async function main() {
       hasCourseInstance: {
         '@type': 'CourseInstance',
         courseMode: 'online',
+        // The intake open for enrolment — not the one already in class.
+        startDate: intakes.next.startDate,
         location: { '@type': 'VirtualLocation', url: `${SITE_URL}/tuition` },
       },
     },
@@ -232,7 +237,23 @@ async function main() {
   const STATIC_ROUTES = [
     { path: 'projects', title: 'Work — Sharad Bhandari', h1: 'Selected work by Sharad Bhandari', description: 'Selected projects and engineering work by Sharad Bhandari, Senior Software Engineer.' },
     { path: 'experience', title: 'Experience — Sharad Bhandari', h1: 'Experience — Sharad Bhandari', description: 'Professional experience and career journey of Sharad Bhandari, Senior Software Engineer.' },
-    { path: 'tuition', title: tuitionTitle, h1: 'Learn Python online — coaching & classes in Kathmandu, Nepal', description: tuitionDesc, keywords: tuitionKeywords, ld: tuitionLd },
+    {
+      path: 'tuition',
+      title: tuitionTitle,
+      h1: 'Learn Python online — coaching & classes in Kathmandu, Nepal',
+      description: tuitionDesc,
+      keywords: tuitionKeywords,
+      ld: tuitionLd,
+      extra:
+        `\n      <p>The ${intakes.current.label} batch is running now. New enrolments are for the ${intakes.next.label} batch.</p>` +
+        `\n      <ul>${courses
+          .map(
+            (c) =>
+              `<li>${escAttr(c.title)} — ${escAttr(c.days)}, ${c.sessionsPerWeek}× / week. ` +
+              `Next batch: ${intakes.next.label}, starts ${c.startDate}.</li>`,
+          )
+          .join('')}</ul>`,
+    },
     { path: 'blog', title: 'Writing — Sharad Bhandari', h1: 'Writing by Sharad Bhandari', description: 'Articles and notes on software engineering, architecture, and building for the web by Sharad Bhandari.', ld: blogLd },
     { path: 'contact', title: contactTitle, h1: 'Hire a Senior Software Engineer in Nepal', description: 'Hire Sharad Bhandari — senior software engineer & Python / backend developer in Kathmandu, Nepal. Available for full-time, freelance, contract and remote roles worldwide.', ld: contactLd },
   ];
@@ -254,7 +275,7 @@ async function main() {
       image: FALLBACK_IMAGE,
       ogType: 'website',
       articleMeta: r.ld ? `<script type="application/ld+json">${JSON.stringify(r.ld)}</script>` : undefined,
-      body: bodyHtml(r.h1, r.description),
+      body: bodyHtml(r.h1, r.description, r.extra ?? ''),
     });
     await writeRoute(r.path, html);
     count++;

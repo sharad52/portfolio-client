@@ -1,9 +1,20 @@
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { DATE_FORMAT, DATETIME_FORMAT } from '@/shared/constants';
 
 // Date utilities
 export const formatDate = (date: string | Date, formatStr: string = DATE_FORMAT): string => {
   return format(new Date(date), formatStr);
+};
+
+/**
+ * Format a **date-only** ISO string ('2026-10-04') in the viewer's local
+ * calendar day. `new Date('2026-10-04')` parses as UTC midnight, which renders
+ * as the *previous* day for anyone west of Greenwich; `parseISO` keeps a
+ * date-only string at local midnight, so the weekday and day always match what
+ * was written.
+ */
+export const formatIsoDate = (isoDate: string, formatStr: string = DATE_FORMAT): string => {
+  return format(parseISO(isoDate), formatStr);
 };
 
 export const formatDateTime = (date: string | Date): string => {

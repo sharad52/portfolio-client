@@ -231,6 +231,20 @@ export type Project = {
 /** Selected work — products Sharad architected / led, drawn from the CV. */
 export const projects: Project[] = [
   {
+    id: 'klyvion',
+    title: 'Klyvion',
+    tagline: 'Open-source AI text-to-speech with voice cloning',
+    description:
+      'An open-source text-to-speech engine in Python — preset voices plus zero-shot voice cloning from a 6–30 second recording. Ships a Python API, a CLI and a FastAPI REST server over pluggable engines (neural XTTS v2, with a lightweight offline fallback); English and Hindi with number-to-words normalization, and multilingual-ready.',
+    year: '2026',
+    category: 'Open Source / AI',
+    technologies: ['Python', 'PyTorch', 'XTTS v2', 'FastAPI', 'Docker'],
+    githubUrl: 'https://github.com/sharad52/Klyvion',
+    liveUrl: 'https://klyvionai.sharadbhandari.com.np',
+    featured: true,
+    accent: 'fuchsia',
+  },
+  {
     id: 'order-forecasting',
     title: 'Order Forecasting System',
     tagline: 'Demand planning for S&R Philippines',
@@ -328,13 +342,34 @@ export type Course = {
   duration: string;        // e.g. '8 weeks'
   sessionsPerWeek: number; // classes per week — matches the number of days below
   days: string;            // weekdays this course meets, e.g. 'Sun / Tue / Thu'
-  startDate: string;       // ISO date, e.g. '2026-08-01'
+  startDate: string;       // ISO first class of the NEXT intake, e.g. '2026-10-04'
   seats: number;           // capacity — track fills manually in the Sheet
   status: 'open' | 'filling' | 'closed';
+  runningNow?: boolean;    // true while the current intake is mid-course
   price: string;           // display only — e.g. 'Rs. 8,000'
   highlights: string[];
   icon: string;            // lucide key resolved by <Icon />
   popular?: boolean;
+};
+
+/**
+ * Intakes (cohorts). `current` is the batch already in class — courses flagged
+ * `runningNow` show a "Running now" badge for it. `next` is the batch every new
+ * enrolment joins, so the cards, the schedule and the enrol form all say so
+ * explicitly and nobody expects to start with the cohort already running.
+ *
+ * When an intake finishes: move `next` into `current`, add the new `next`, and
+ * bump each course's `startDate` to its first class in that intake.
+ */
+export type Intake = {
+  label: string;     // 'August 2026' — full name, used in headings & the form
+  short: string;     // 'August' — used on tight badges and buttons
+  startDate: string; // ISO nominal first class of the intake
+};
+
+export const intakes: { current: Intake; next: Intake } = {
+  current: { label: 'August 2026', short: 'August', startDate: '2026-08-01' },
+  next: { label: 'October 2026', short: 'October', startDate: '2026-10-04' },
 };
 
 /**
@@ -368,9 +403,10 @@ export const courses: Course[] = [
     duration: '8 weeks',
     sessionsPerWeek: 3,
     days: 'Sun / Tue / Thu',
-    startDate: '2026-08-01',
+    startDate: '2026-10-04',
     seats: 8,
     status: 'open',
+    runningNow: true,
     price: 'Rs. 8,000',
     highlights: ['Live, small-group sessions', 'Hands-on mini-projects', 'Session recordings provided'],
     icon: 'code',
@@ -385,9 +421,10 @@ export const courses: Course[] = [
     duration: '10 weeks',
     sessionsPerWeek: 2,
     days: 'Mon / Wed',
-    startDate: '2026-08-03',
+    startDate: '2026-10-05',
     seats: 8,
     status: 'open',
+    runningNow: true,
     price: 'Rs. 12,000',
     highlights: ['Interview-style problems', 'Weekly practice sets', 'Code reviews on your solutions'],
     icon: 'boxes',
@@ -401,9 +438,10 @@ export const courses: Course[] = [
     duration: '12 weeks',
     sessionsPerWeek: 2,
     days: 'Fri / Sat',
-    startDate: '2026-08-01',
+    startDate: '2026-10-09',
     seats: 6,
     status: 'filling',
+    runningNow: true,
     price: 'Rs. 18,000',
     highlights: ['Build a production-style API', 'PostgreSQL, auth & testing', 'Deployment with Docker'],
     icon: 'server',

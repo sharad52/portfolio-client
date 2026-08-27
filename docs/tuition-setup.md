@@ -81,12 +81,33 @@ Edit [`src/content/site.ts`](../src/content/site.ts):
   - **`days`** — the weekdays it meets, e.g. `'Sun / Tue / Thu'`. Split days
     across the week so courses never clash (the samples use Beginner 3 days,
     DSA 2 days, Backend 2 days = one full week, no overlap).
-  - **`startDate`**, **`seats`** (capacity), and **`status`**
-    (`open` | `filling` | `closed`). Set a course `closed` once it fills — it
-    shows as *Full*. **Seats are tracked by you, by hand, against the sheet.**
+  - **`startDate`** — the first class of the **next intake** (the batch people
+    are enrolling into right now), not the one already running.
+  - **`seats`** (capacity) and **`status`** (`open` | `filling` | `closed`).
+    Set a course `closed` once it fills — it shows as *… batch full*.
+    **Seats are tracked by you, by hand, against the sheet.**
+  - **`runningNow`** — `true` while the current intake is mid-course. Adds the
+    green *Running now* badge to the course card and the schedule row.
 - **`batches`** — the two **shared time slots** every course offers
   (Morning `7:00–8:00 AM`, Evening `7:00–8:00 PM`). Same times for all courses;
   only the days differ. Edit these once to change the class times site-wide.
+
+### 7. Rolling over to the next intake
+`intakes` in [`src/content/site.ts`](../src/content/site.ts) is the single
+source of truth for *which batch is running* and *which batch new enrolments
+join*. Everything else — the hero chips, the "Running now" badges, the card
+footers, the class-schedule rows, the enrol form's notice, the FAQ, the page
+meta description and the label written into your sheet — reads from it.
+
+When an intake ends:
+1. Move `intakes.next` into `intakes.current`, and add the new upcoming intake
+   as `intakes.next` (`label` = `'January 2027'`, `short` = `'January'`,
+   `startDate` = its nominal first class).
+2. Bump each course's `startDate` to its own first class in that new intake
+   (keep it on one of the course's `days`).
+3. Clear `runningNow` on any course that is not actually in class.
+
+No component changes are needed — rebuild and redeploy.
 
 ---
 

@@ -1,5 +1,6 @@
-import { profile, courses, batches } from '@/content/site';
+import { profile, courses, batches, intakes } from '@/content/site';
 import { getApproxLocation, formatLocation, type ApproxLocation } from '@/shared/utils/location';
+import { formatIsoDate } from '@/shared/utils/helpers';
 import type { EnrollmentFormData } from '../types';
 
 /**
@@ -33,19 +34,24 @@ function resolveLabels(data: EnrollmentFormData): { course: string; batch: strin
   const courseObj = courses.find((c) => c.slug === data.courseSlug);
   const slot = batches.find((b) => b.id === data.batchId);
   const course = courseObj?.title || data.courseSlug;
+  // Every new enrolment is for the NEXT intake — the current one is already
+  // mid-course. Prefixing the intake keeps the sheet/email unambiguous without
+  // needing a new column in the Apps Script.
+  const start = courseObj ? ` (starts ${formatIsoDate(courseObj.startDate, 'd MMM yyyy')})` : '';
+  const intake = `${intakes.next.label} intake${start}`;
   // The slot gives the time; the course gives the days — combine into the full
   // schedule so the email / sheet records exactly when the class meets.
-  const batch = slot
+  const schedule = slot
     ? `${slot.label} — ${courseObj ? `${courseObj.days} · ` : ''}${slot.time}`
     : data.batchId;
-  return { course, batch };
+  return { course, batch: `${intake} · ${schedule}` };
 }
 
 /** Compose a WhatsApp message from the enrolment form. */
 export function whatsAppFromEnrollment(data: EnrollmentFormData): string {
   const { course, batch } = resolveLabels(data);
   const lines = [
-    `Hi Sharad, I'd like to enrol in your Python tuition.`,
+    `Hi Sharad, I'd like to enrol in your Python tuition for the ${intakes.next.label} batch.`,
     '',
     `Course: ${course}`,
     `Batch: ${batch}`,

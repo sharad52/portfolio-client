@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { CalendarDays, Users, Wifi, Video, BadgeCheck, Check } from 'lucide-react';
-import { profile, seo, courses } from '@/content/site';
+import { profile, seo, courses, intakes } from '@/content/site';
 import type { Course } from '@/features/tuition/types';
 import { CourseCard } from '@/features/tuition/components/CourseCard';
 import { EnrollDialog } from '@/features/tuition/components/EnrollDialog';
 import { AuroraBackground, Reveal, Section } from '@/shared/components/ui';
+import { formatIsoDate } from '@/shared/utils/helpers';
 
 const TITLE = 'Learn Python Online — Python Classes & Coaching in Kathmandu, Nepal';
 const DESC =
-  'Learn Python online with live, small-group coaching from Sharad Bhandari — a senior software engineer in Kathmandu, Nepal with 7+ years’ experience. Python classes for beginners through to backend development (Django, FastAPI). Enroll free for the next batch — no payment needed.';
+  `Learn Python online with live, small-group coaching from Sharad Bhandari — a senior software engineer in Kathmandu, Nepal with 7+ years’ experience. Python classes for beginners through to backend development (Django, FastAPI). The ${intakes.current.label} batch is running now — enroll free for the ${intakes.next.label} batch, no payment needed.`;
 
 /** Search terms this page targets. Google largely ignores the keywords meta,
  *  but it is harmless and the same terms are woven into the title, description,
@@ -41,6 +42,7 @@ const PERKS = [
 
 /** The reassurances a hesitant student needs before enrolling. */
 const ASSURANCES = [
+  `Seats reserved for the ${intakes.next.label} batch`,
   'Reserve your seat in under a minute',
   'Beginner-friendly — start from absolute zero',
   'Live, small-group sessions with me',
@@ -48,6 +50,10 @@ const ASSURANCES = [
 ] as const;
 
 const FAQ = [
+  {
+    q: 'Which batch am I enrolling in right now?',
+    a: `The ${intakes.current.label} batch is already running and is mid-course, so new enrolments join the ${intakes.next.label} batch. Each course starts on its own first class day in ${intakes.next.short} — shown on every course card and in the enrolment form — and the days and times stay exactly the same.`,
+  },
   {
     q: 'Who teaches the Python classes?',
     a: `I'm Sharad Bhandari, a senior software engineer based in Kathmandu, Nepal with ${profile.yearsExperience}+ years building production Python systems. I teach every session personally.`,
@@ -97,6 +103,14 @@ const coursesLd = {
         '@type': 'CourseInstance',
         courseMode: 'online',
         courseWorkload: `${c.duration}, ${c.sessionsPerWeek} sessions per week`,
+        // The intake open for enrolment — not the one already in class.
+        startDate: c.startDate,
+        courseSchedule: {
+          '@type': 'Schedule',
+          byDay: c.days,
+          repeatFrequency: 'P1W',
+          repeatCount: c.sessionsPerWeek,
+        },
         location: { '@type': 'VirtualLocation', url: `${seo.siteUrl}/tuition` },
       },
     },
@@ -135,9 +149,9 @@ const STATUS_STYLE: Record<Course['status'], string> = {
 };
 
 const STATUS_LABEL: Record<Course['status'], string> = {
-  open: 'Enrolling now',
-  filling: 'Filling fast',
-  closed: 'Full',
+  open: `${intakes.next.short} seats open`,
+  filling: `${intakes.next.short} filling fast`,
+  closed: `${intakes.next.short} batch full`,
 };
 
 export const TuitionPage: React.FC = () => {
@@ -173,10 +187,16 @@ export const TuitionPage: React.FC = () => {
           {/* Hero */}
           <div className="mb-14 max-w-2xl">
             <Reveal>
-              <span className="chip mb-5">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                Enrolling for the next batch
-              </span>
+              <div className="mb-5 flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-200">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                  </span>
+                  {intakes.current.label} batch running now
+                </span>
+                <span className="chip">Enrolling for {intakes.next.label}</span>
+              </div>
             </Reveal>
             <Reveal delay={0.05}>
               <h1 className="font-display text-4xl font-medium tracking-tight text-fg md:text-5xl">
@@ -188,8 +208,10 @@ export const TuitionPage: React.FC = () => {
                 Hands-on, small-group <strong className="text-fg">online Python coaching</strong> taught by{' '}
                 <strong className="text-fg">{profile.name}</strong> — a senior software engineer based in Kathmandu,
                 Nepal with {profile.yearsExperience}+ years building real production systems. Join live from anywhere
-                in Nepal or worldwide. Start from zero or level up to backend development. Pick a course, choose a
-                batch, and enroll in a minute — no payment needed now.
+                in Nepal or worldwide. Start from zero or level up to backend development. The{' '}
+                <strong className="text-fg">{intakes.current.label}</strong> batch is mid-course, so enrolments
+                now reserve a seat in the <strong className="text-fg">{intakes.next.label}</strong> batch — pick
+                a course, choose your time slot, and enroll in a minute. No payment needed now.
               </p>
             </Reveal>
           </div>
@@ -206,8 +228,9 @@ export const TuitionPage: React.FC = () => {
                     No payment needed to enroll
                   </h2>
                   <p className="mt-2 text-fg-muted">
-                    Just pick a course and reserve your seat. I'll personally confirm your seat and
-                    share payment options over WhatsApp or email — nothing is ever charged on this site.
+                    Just pick a course and reserve your seat in the {intakes.next.label} batch. I'll
+                    personally confirm your seat and share payment options over WhatsApp or email —
+                    nothing is ever charged on this site.
                   </p>
                 </div>
                 <ul className="grid shrink-0 gap-3 text-sm sm:grid-cols-2 lg:grid-cols-1">
@@ -249,11 +272,22 @@ export const TuitionPage: React.FC = () => {
               course so nothing ever clashes. */}
           <Reveal>
             <div className="mt-16 rounded-3xl border border-line bg-white/[0.03] p-6 backdrop-blur-xl sm:p-8">
-              <h2 className="font-display text-2xl font-semibold text-fg">Class schedule</h2>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="font-display text-2xl font-semibold text-fg">Class schedule</h2>
+                <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-200">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                  </span>
+                  {intakes.current.label} batch running now
+                </span>
+              </div>
               <p className="mt-2 text-sm text-fg-muted">
                 Every class runs <strong className="text-fg">7–8 AM</strong> or{' '}
                 <strong className="text-fg">7–8 PM</strong> (NPT) — pick whichever suits you. Each course
-                meets on its own days, so courses never overlap. Seats are limited.
+                meets on its own days, so courses never overlap. Seats are limited. The times below are
+                the same for the running {intakes.current.label} batch and the{' '}
+                <strong className="text-fg">{intakes.next.label}</strong> batch you can enroll in today.
               </p>
               <div className="mt-6 space-y-3">
                 {courses.map((c) => (
@@ -262,12 +296,25 @@ export const TuitionPage: React.FC = () => {
                     className="flex flex-col gap-3 rounded-2xl border border-line bg-white/[0.02] p-4 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div>
-                      <p className="font-medium text-fg">{c.title}</p>
-                      <p className="text-sm text-fg-muted">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="font-medium text-fg">{c.title}</p>
+                        {c.runningNow && (
+                          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2.5 py-0.5 text-[11px] font-medium text-emerald-200">
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                            Running now
+                          </span>
+                        )}
+                      </div>
+                      <p className="mt-0.5 text-sm text-fg-muted">
                         {c.days} · {c.sessionsPerWeek}× / week — Morning or Evening (7–8)
                       </p>
+                      <p className="mt-1 text-xs text-fg-faint">
+                        Next batch:{' '}
+                        <span className="text-accent-cyan">{intakes.next.label}</span> — starts{' '}
+                        {formatIsoDate(c.startDate, 'EEEE, d MMMM yyyy')}
+                      </p>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-shrink-0 items-center gap-3">
                       <span className="text-xs text-fg-faint">{c.seats} seats</span>
                       <span className={`rounded-full border px-3 py-1 text-xs font-medium ${STATUS_STYLE[c.status]}`}>
                         {STATUS_LABEL[c.status]}
