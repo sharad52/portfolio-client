@@ -17,6 +17,8 @@ import { BlogPostPage } from '@/pages/BlogPostPage';
 import { ProjectsPage } from '@/pages/ProjectsPage';
 import { ExperiencePage } from '@/pages/ExperiencePage';
 import { TuitionPage } from '@/pages/TuitionPage';
+import { MarketplacePage } from '@/pages/MarketplacePage';
+import { ProductPage } from '@/pages/ProductPage';
 import { ContactPage } from '@/pages/ContactPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 import { ServerErrorPage } from '@/pages/ServerErrorPage';
@@ -46,6 +48,8 @@ function AppContent() {
           <Route path={ROUTES.PROJECTS} element={<ProjectsPage />} />
           <Route path={ROUTES.EXPERIENCE} element={<ExperiencePage />} />
           <Route path={ROUTES.TUITION} element={<TuitionPage />} />
+          <Route path={ROUTES.MARKETPLACE} element={<MarketplacePage />} />
+          <Route path={ROUTES.PRODUCT_DETAIL} element={<ProductPage />} />
           <Route path={ROUTES.CONTACT} element={<ContactPage />} />
           <Route path="/error" element={<ServerErrorPage />} />
           <Route path="/500" element={<ServerErrorPage />} />

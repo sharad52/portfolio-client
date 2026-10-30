@@ -45,11 +45,25 @@ export const socials = [
   { label: 'Email', href: `mailto:${profile.email}`, icon: 'mail' },
 ] as const;
 
-export const navItems: readonly { label: string; path: string; highlight?: boolean }[] = [
+/**
+ * `highlight` renders the item as a glowing gradient pill instead of plain text
+ * (colour key → gradient in Header.tsx); `icon` is a lucide key shown in it,
+ * and `badge` adds a small pulsing tag such as 'New'.
+ */
+export type NavItem = {
+  label: string;
+  path: string;
+  highlight?: 'emerald' | 'gold';
+  icon?: string;
+  badge?: string;
+};
+
+export const navItems: readonly NavItem[] = [
   { label: 'Home', path: '/' },
   { label: 'Work', path: '/projects' },
   { label: 'Experience', path: '/experience' },
-  { label: 'Learn Python with Me', path: '/tuition', highlight: true },
+  { label: 'Marketplace', path: '/marketplace', highlight: 'gold', icon: 'store', badge: 'New' },
+  { label: 'Learn Python with Me', path: '/tuition', highlight: 'emerald', icon: 'graduation' },
   { label: 'Writing', path: '/blog' },
   { label: 'Contact', path: '/contact' },
 ];
@@ -445,6 +459,181 @@ export const courses: Course[] = [
     price: 'Rs. 18,000',
     highlights: ['Build a production-style API', 'PostgreSQL, auth & testing', 'Deployment with Docker'],
     icon: 'server',
+  },
+];
+
+/* ─────────────────────────────────────────────────────────────────────────
+ *  MARKETPLACE — applications Sharad built and sells
+ * ─────────────────────────────────────────────────────────────────────────
+ *  Visitors either buy at the asking price or place a bid (≥ minimumBid).
+ *  Nothing is charged on the site: each request lands in the "Offers" sheet
+ *  tab + your inbox (or WhatsApp) and you close the deal by hand.
+ *  Setup guide → docs/marketplace-setup.md
+ * ───────────────────────────────────────────────────────────────────────── */
+export type ProductStatus = 'available' | 'under-offer' | 'sold';
+
+export type Product = {
+  slug: string;
+  name: string;
+  tagline: string;
+  summary: string;
+  category: string;
+  icon: string;             // lucide key resolved by <Icon /> — fallback when no logo
+  logo?: string;            // app icon under /public, e.g. '/images/marketplace/app.webp'
+  techStack: string[];
+  features: string[];
+  includes: string[];       // what the buyer receives on handover
+  currency: 'NPR' | 'USD';
+  askingPrice: number;      // "Buy now" price — whole units, no separators
+  minimumBid?: number;      // lowest offer accepted; omit to disable bidding
+  status: ProductStatus;    // 'sold' disables both actions on the card
+  demoUrl?: string;
+  featured?: boolean;
+  platforms?: string[];     // e.g. ['Web', 'Android', 'iOS', 'REST API']
+  /** Search-facing copy for the product's own page (/marketplace/<slug>).
+   *  Write it the way a buyer would search — the same words go into the
+   *  title, meta description, visible text and structured data. */
+  seo?: {
+    title: string;          // <title>, ~60 chars
+    description: string;    // meta description, ~155 chars
+    keywords: string[];
+  };
+  overview?: string[];      // intro paragraphs on the product page
+  sections?: { heading: string; body: string; points?: string[] }[];
+  audiences?: string[];     // who the app is a good fit for
+  faq?: { q: string; a: string }[];
+  ogImage?: string;         // 1200×630 share image under /public
+};
+
+/** Listings — one entry per application for sale. Prices are yours to set. */
+export const products: Product[] = [
+  {
+    slug: 'bereach',
+    name: 'BeReach',
+    tagline: 'Expense tracker, budget & loan app — web, Android, iOS and API',
+    summary:
+      'A complete finance-tracking product for individuals, households and small organizations: accounts, income & expenses, budgets, recurring bills and loans, shared across a team with role-based access. Ships as a FastAPI backend, a React web app and a React Native (Expo) mobile app.',
+    category: 'Fintech',
+    icon: 'wallet',
+    logo: '/images/marketplace/bereach.webp',
+    techStack: ['FastAPI', 'PostgreSQL', 'Redis', 'React 19', 'React Native / Expo', 'Docker'],
+    features: [
+      'Accounts, transactions, transfers & reconciliation',
+      'Budgets, recurring bills and loan tracking with interest',
+      'Organizations with owner / admin / member / viewer roles',
+      'OTP sign-up, two-factor login & rotating refresh tokens',
+      'Reports: cash flow, savings rate, spending by category',
+      'Offline-first Android & iOS app, light and dark themes',
+    ],
+    includes: [
+      'Full source code — backend, web and mobile',
+      'Deployment to your server / app stores',
+      '30 days of bug-fix support',
+    ],
+    currency: 'NPR',
+    askingPrice: 500000,
+    minimumBid: 300000,
+    status: 'available',
+    featured: true,
+    platforms: ['Web app', 'Android', 'iOS', 'REST API'],
+    seo: {
+      title: 'BeReach — Expense Tracker & Budget App Source Code for Sale',
+      description:
+        'Buy BeReach: a ready-made expense tracker, budget and loan app with web, Android & iOS clients and a FastAPI backend. Full source code, made in Nepal.',
+      keywords: [
+        'expense tracker app source code',
+        'personal finance app for sale',
+        'budget app source code',
+        'money manager app source code',
+        'buy expense tracker app',
+        'white label finance app',
+        'expense tracker app Nepal',
+        'kharcha app Nepal',
+        'loan tracking app',
+        'household budget app',
+        'small business expense tracker',
+        'React Native expense tracker',
+        'FastAPI fintech app',
+        'personal finance SaaS',
+      ],
+    },
+    overview: [
+      'BeReach is a complete, production-ready personal and shared finance app — an expense tracker, budget planner and loan manager in one. People record where money comes from and where it goes, across bank accounts, wallets and cash, and see exactly where they stand.',
+      'It is not a template or a UI kit: BeReach ships as three working codebases — a FastAPI backend, a React web app and an offline-first React Native mobile app for Android and iOS — built with money correctness and per-user data isolation at the core. Buy it to launch your own finance app, rebrand it for your bank, cooperative or company, or run it as a SaaS.',
+    ],
+    sections: [
+      {
+        heading: 'Expense tracking, budgets & bills',
+        body: 'Everything a money-manager app needs, already built and tested.',
+        points: [
+          'Accounts for banks, digital wallets and cash, with reconciliation and freeze',
+          'Income, expenses and transfers with categories and sub-categories',
+          'Category budgets with periods that close and roll over automatically',
+          'Recurring transactions and bills — pause, resume or skip',
+          'Savings goals and a multi-currency ledger with exchange rates',
+        ],
+      },
+      {
+        heading: 'Loans, lending & borrowing',
+        body: 'Track money lent to and borrowed from people and businesses — a digital khata.',
+        points: [
+          'Counterparties, repayments and daily interest accrual',
+          'Write-off and default handling',
+          'Loan reports: summary, aging, cash flow and timeline',
+        ],
+      },
+      {
+        heading: 'Auto-import from bank alert emails',
+        body: 'Users connect Gmail and BeReach turns transaction alert emails from Nepali banks (RBB, NIMB, Kamana Sewa and more) into suggested entries they accept with one tap — no manual typing.',
+      },
+      {
+        heading: 'Reports, forecasts & insights',
+        body: 'Turns raw transactions into answers.',
+        points: [
+          'Income, expense, net and savings-rate reports, spending by category',
+          '30/60/90-day cash-flow forecast and 12-month net-worth trend',
+          'Financial health score, subscription detection and anomaly alerts',
+          'Notification feed that follows the user across devices',
+        ],
+      },
+      {
+        heading: 'Households, teams & small businesses',
+        body: 'Shared workspaces let a family, business or group manage money together, with owner, admin, member and viewer roles, email invitations and approvals.',
+      },
+      {
+        heading: 'Secure and production-ready',
+        body: 'Email OTP sign-up, two-factor login, rotating refresh tokens with reuse detection, rate limiting, versioned Terms & Privacy consent, Docker deployment, CI and automated tests across all three codebases.',
+      },
+    ],
+    audiences: [
+      'Founders launching an expense tracker or personal finance app',
+      'Banks, cooperatives and microfinance companies wanting a branded money app',
+      'Agencies that need a white-label fintech product for a client',
+      'Businesses that want an internal expense and loan tracking tool',
+    ],
+    faq: [
+      {
+        q: 'What exactly do I get when I buy BeReach?',
+        a: 'The full source code of all three parts — the FastAPI backend, the React web app and the React Native (Expo) mobile app — with ownership rights, help deploying it to your server and app store accounts, and 30 days of bug-fix support.',
+      },
+      {
+        q: 'Can I rebrand BeReach and publish it under my own name?',
+        a: 'Yes. You can change the name, logo and colours and publish it on the web, Google Play and the App Store as your own product. I can also do the rebranding for you as part of the deal.',
+      },
+      {
+        q: 'Does it work for users in Nepal?',
+        a: 'Yes — it was built in Kathmandu. It supports NPR and any other currency, digital wallets alongside bank accounts, and can auto-import transactions from Nepali bank alert emails.',
+      },
+      {
+        q: 'Is there a demo?',
+        a: 'Yes. Make an offer or message me on WhatsApp and I will walk you through a live demo of the web and mobile apps before you buy.',
+      },
+      {
+        q: 'Can I make an offer below the asking price?',
+        a: 'Yes. Use "Make an offer" on this page to bid any amount at or above the minimum. I review every offer and will accept, counter or reply within a day or two.',
+      },
+    ],
+    ogImage: '/images/marketplace/bereach-og.png',
   },
 ];
 
