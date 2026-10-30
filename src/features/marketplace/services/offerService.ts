@@ -85,6 +85,12 @@ export function whatsAppFromOffer(data: OfferFormData): string {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join('\n'))}`;
 }
 
+/** WhatsApp link asking for a walkthrough of a product before buying. */
+export function whatsAppDemoRequest(product: Product): string {
+  const text = `Hi Sharad, I'm interested in ${product.name} from your marketplace. Could you show me a demo?`;
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
+}
+
 /** True if any email/sheet delivery channel is configured. */
 export const isOfferConfigured = (): boolean => Boolean(MARKETPLACE_SCRIPT_URL || WEB3FORMS_KEY);
 

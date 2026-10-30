@@ -47,6 +47,7 @@ const productsLd = {
     item: {
       '@type': 'SoftwareApplication',
       name: p.name,
+      url: `${seo.siteUrl}/marketplace/${p.slug}`,
       description: p.summary,
       applicationCategory: p.category,
       ...(p.logo && { image: `${seo.siteUrl}${p.logo}` }),
@@ -55,7 +56,7 @@ const productsLd = {
         price: p.askingPrice,
         priceCurrency: p.currency,
         availability: p.status === 'sold' ? 'https://schema.org/SoldOut' : 'https://schema.org/InStock',
-        url: `${seo.siteUrl}/marketplace`,
+        url: `${seo.siteUrl}/marketplace/${p.slug}`,
       },
       author: { '@type': 'Person', name: profile.name, url: seo.siteUrl },
     },

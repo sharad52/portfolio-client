@@ -44,3 +44,32 @@ Edit `products` in [`src/content/site.ts`](../src/content/site.ts):
 
 The highest current bid is **not** shown publicly — that would need a readable
 backend. You see all bids in the sheet and respond individually.
+
+## Search visibility (SEO)
+Every listing gets its own indexable page at `/marketplace/<slug>` (e.g.
+[`/marketplace/bereach`](https://sharadbhandari.com.np/marketplace/bereach)),
+built to rank for searches like *"expense tracker app source code"*.
+
+- **Copy lives in `products`** in `src/content/site.ts`: `seo.title`,
+  `seo.description`, `seo.keywords`, `overview`, `sections`, `audiences`,
+  `faq`, `platforms`. Use the words a buyer would type — they're reused in the
+  `<title>`, meta description, visible headings and structured data.
+- **Prerendered** by `scripts/prerender.mjs` into
+  `dist/marketplace/<slug>/index.html` with the full text in the HTML (no JS
+  needed), plus `Product` + `SoftwareApplication`, `BreadcrumbList` and
+  `FAQPage` JSON-LD from `src/features/marketplace/seo.ts` (shared with the
+  React page), and a sitemap entry with the share image.
+- **Share image**: `ogImage` (1200×630, e.g. `/images/marketplace/bereach-og.png`)
+  is what Google Images, WhatsApp, Facebook and LinkedIn show for the link.
+
+After deploying to `main`:
+1. Google Search Console → **URL inspection** → paste the product URL →
+   **Request indexing**. Also resubmit `sitemap.xml` under **Sitemaps**.
+2. Check the structured data with Google's
+   [Rich Results Test](https://search.google.com/test/rich-results).
+3. Ranking takes weeks. Links pointing at the product page (LinkedIn posts,
+   a blog article, the BeReach app's own website, GitHub READMEs) speed it up
+   more than anything on the page itself.
+
+> The asking price is published in the structured data — set the real price
+> before deploying.

@@ -11,6 +11,7 @@ export const ROUTES = {
   SKILLS: '/skills',
   TUITION: '/tuition',
   MARKETPLACE: '/marketplace',
+  PRODUCT_DETAIL: '/marketplace/:slug',
   CONTACT: '/contact',
   ADMIN: '/admin',
   ADMIN_BLOG: '/admin/blog',
@@ -23,6 +24,9 @@ export type RoutePath = typeof ROUTES[keyof typeof ROUTES];
 // Helper functions for dynamic routes
 export const createProjectRoute = (slug: string): string => 
   ROUTES.PROJECT_DETAIL.replace(':slug', slug);
+
+export const createProductRoute = (slug: string): string =>
+  ROUTES.PRODUCT_DETAIL.replace(':slug', slug);
 
 export const createBlogPostRoute = (slug: string): string => 
   ROUTES.BLOG_POST.replace(':slug', slug);

@@ -1,7 +1,9 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Check, ExternalLink, Gavel, ShoppingCart } from 'lucide-react';
+import { ArrowRight, Check, ExternalLink, Gavel, ShoppingCart } from 'lucide-react';
 import { Icon } from '@/shared/components/ui';
+import { createProductRoute } from '@/core/routes';
 import { formatPrice } from '../services/offerService';
 import type { OfferType, Product } from '../types';
 
@@ -63,7 +65,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index = 0, on
 
       <span className="chip mt-5 w-fit">{product.category}</span>
 
-      <h3 className="mt-4 font-display text-xl font-semibold text-fg">{product.name}</h3>
+      <h3 className="mt-4 font-display text-xl font-semibold text-fg">
+        <Link to={createProductRoute(product.slug)} className="hover:text-accent-cyan">{product.name}</Link>
+      </h3>
       <p className="mt-1 text-sm text-fg">{product.tagline}</p>
       <p className="mt-3 text-sm leading-relaxed text-fg-muted">{product.summary}</p>
 
@@ -92,6 +96,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, index = 0, on
           ))}
         </ul>
       </div>
+
+      <Link
+        to={createProductRoute(product.slug)}
+        className="mt-4 inline-flex w-fit items-center gap-1.5 text-sm text-fg hover:text-accent-cyan"
+      >
+        Full details, FAQ &amp; what's included <ArrowRight size={14} />
+      </Link>
 
       {product.demoUrl && (
         <a
