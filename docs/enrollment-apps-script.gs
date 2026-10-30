@@ -1,8 +1,8 @@
 /**
  * Portfolio → Google Sheet + email — handles BOTH the contact form and Python
- * tuition enrolments in a single deployment. Each submission is routed to its
- * own tab by the `type` field ('enrollment' → Enrollments tab, otherwise
- * Contacts tab).
+ * tuition enrolments AND marketplace offers in a single deployment. Each
+ * submission is routed to its own tab by the `type` field ('enrollment' →
+ * Enrollments tab, 'offer' → Offers tab, otherwise Contacts tab).
  *
  * SETUP (full guide: docs/tuition-setup.md)
  *   1. Open your Google Sheet → Extensions → Apps Script.
@@ -23,6 +23,7 @@ function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents);
     if (data.type === 'enrollment') return handleEnrollment(data);
+    if (data.type === 'offer') return handleOffer(data);
     return handleContact(data);
   } catch (err) {
     return jsonOut({ ok: false, error: String(err) });
@@ -64,6 +65,46 @@ function handleEnrollment(data) {
         'Goals:  ' + (data.goals || '') + '\n' +
         'Location: ' + (data.location || 'Unknown') + '\n' +
         'IP:     ' + (data.ip || ''),
+    });
+  }
+  return jsonOut({ ok: true });
+}
+
+// ── Marketplace buy requests & bids → "Offers" tab ─────────────────────────
+function handleOffer(data) {
+  const sheet = getSheet('Offers', [
+    'Timestamp', 'Product', 'Type', 'Amount', 'Name', 'Email', 'Phone', 'Message', 'Location', 'IP', 'Source',
+  ]);
+
+  sheet.appendRow([
+    new Date(),
+    data.product || '',
+    data.offerType || '',
+    data.amount || '',
+    data.name || '',
+    data.email || '',
+    data.phone || '',
+    data.message || '',
+    data.location || '',
+    data.ip || '',
+    data.source || '',
+  ]);
+
+  if (NOTIFY_EMAIL) {
+    MailApp.sendEmail({
+      to: NOTIFY_EMAIL,
+      subject: 'New marketplace ' + (data.offerType || 'offer') + ': ' + (data.product || '') + ' — ' + (data.amount || ''),
+      replyTo: data.email || NOTIFY_EMAIL,
+      body:
+        'Product: ' + (data.product || '') + '\n' +
+        'Type:    ' + (data.offerType || '') + '\n' +
+        'Amount:  ' + (data.amount || '') + '\n\n' +
+        'Name:    ' + (data.name || '') + '\n' +
+        'Email:   ' + (data.email || '') + '\n' +
+        'Phone:   ' + (data.phone || '') + '\n' +
+        'Message: ' + (data.message || '') + '\n' +
+        'Location: ' + (data.location || 'Unknown') + '\n' +
+        'IP:      ' + (data.ip || ''),
     });
   }
   return jsonOut({ ok: true });
@@ -125,5 +166,5 @@ function jsonOut(obj) {
 
 // Lets you confirm the deployment works by visiting the URL in a browser.
 function doGet() {
-  return ContentService.createTextOutput('Portfolio contact + enrolment endpoint is live.');
+  return ContentService.createTextOutput('Portfolio contact + enrolment + offers endpoint is live.');
 }

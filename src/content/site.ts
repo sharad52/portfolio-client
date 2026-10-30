@@ -45,11 +45,25 @@ export const socials = [
   { label: 'Email', href: `mailto:${profile.email}`, icon: 'mail' },
 ] as const;
 
-export const navItems: readonly { label: string; path: string; highlight?: boolean }[] = [
+/**
+ * `highlight` renders the item as a glowing gradient pill instead of plain text
+ * (colour key → gradient in Header.tsx); `icon` is a lucide key shown in it,
+ * and `badge` adds a small pulsing tag such as 'New'.
+ */
+export type NavItem = {
+  label: string;
+  path: string;
+  highlight?: 'emerald' | 'gold';
+  icon?: string;
+  badge?: string;
+};
+
+export const navItems: readonly NavItem[] = [
   { label: 'Home', path: '/' },
   { label: 'Work', path: '/projects' },
   { label: 'Experience', path: '/experience' },
-  { label: 'Learn Python with Me', path: '/tuition', highlight: true },
+  { label: 'Marketplace', path: '/marketplace', highlight: 'gold', icon: 'store', badge: 'New' },
+  { label: 'Learn Python with Me', path: '/tuition', highlight: 'emerald', icon: 'graduation' },
   { label: 'Writing', path: '/blog' },
   { label: 'Contact', path: '/contact' },
 ];
@@ -445,6 +459,68 @@ export const courses: Course[] = [
     price: 'Rs. 18,000',
     highlights: ['Build a production-style API', 'PostgreSQL, auth & testing', 'Deployment with Docker'],
     icon: 'server',
+  },
+];
+
+/* ─────────────────────────────────────────────────────────────────────────
+ *  MARKETPLACE — applications Sharad built and sells
+ * ─────────────────────────────────────────────────────────────────────────
+ *  Visitors either buy at the asking price or place a bid (≥ minimumBid).
+ *  Nothing is charged on the site: each request lands in the "Offers" sheet
+ *  tab + your inbox (or WhatsApp) and you close the deal by hand.
+ *  Setup guide → docs/marketplace-setup.md
+ * ───────────────────────────────────────────────────────────────────────── */
+export type ProductStatus = 'available' | 'under-offer' | 'sold';
+
+export type Product = {
+  slug: string;
+  name: string;
+  tagline: string;
+  summary: string;
+  category: string;
+  icon: string;             // lucide key resolved by <Icon /> — fallback when no logo
+  logo?: string;            // app icon under /public, e.g. '/images/marketplace/app.webp'
+  techStack: string[];
+  features: string[];
+  includes: string[];       // what the buyer receives on handover
+  currency: 'NPR' | 'USD';
+  askingPrice: number;      // "Buy now" price — whole units, no separators
+  minimumBid?: number;      // lowest offer accepted; omit to disable bidding
+  status: ProductStatus;    // 'sold' disables both actions on the card
+  demoUrl?: string;
+  featured?: boolean;
+};
+
+/** Listings — one entry per application for sale. Prices are yours to set. */
+export const products: Product[] = [
+  {
+    slug: 'bereach',
+    name: 'BeReach',
+    tagline: 'Personal & shared finance tracking — web, mobile and API',
+    summary:
+      'A complete finance-tracking product for individuals, households and small organizations: accounts, income & expenses, budgets, recurring bills and loans, shared across a team with role-based access. Ships as a FastAPI backend, a React web app and a React Native (Expo) mobile app.',
+    category: 'Fintech',
+    icon: 'wallet',
+    logo: '/images/marketplace/bereach.webp',
+    techStack: ['FastAPI', 'PostgreSQL', 'Redis', 'React 19', 'React Native / Expo', 'Docker'],
+    features: [
+      'Accounts, transactions, transfers & reconciliation',
+      'Budgets, recurring bills and loan tracking with interest',
+      'Organizations with owner / admin / member / viewer roles',
+      'OTP sign-up, two-factor login & rotating refresh tokens',
+      'Reports: cash flow, savings rate, spending by category',
+      'Offline-first Android & iOS app, light and dark themes',
+    ],
+    includes: [
+      'Full source code — backend, web and mobile',
+      'Deployment to your server / app stores',
+      '30 days of bug-fix support',
+    ],
+    currency: 'NPR',
+    askingPrice: 500000,
+    minimumBid: 300000,
+    status: 'available',
+    featured: true,
   },
 ];
 

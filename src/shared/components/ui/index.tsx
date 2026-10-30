@@ -3,7 +3,7 @@ import { motion, useInView, useScroll, useSpring, useMotionValue, useTransform, 
 import {
   Server, Cloud, LayoutGrid, Users, Github, Linkedin, Mail, ArrowRight,
   Zap, Workflow, Database, Network, Facebook, Instagram,
-  Code2, Boxes, Terminal, GraduationCap, Sparkles,
+  Code2, Boxes, Terminal, GraduationCap, Sparkles, ShoppingCart, Wallet, Store,
   type LucideIcon,
 } from 'lucide-react';
 import { type IconType } from 'react-icons';
@@ -28,6 +28,9 @@ const ICONS: Record<string, LucideIcon> = {
   terminal: Terminal,
   graduation: GraduationCap,
   sparkles: Sparkles,
+  cart: ShoppingCart,
+  wallet: Wallet,
+  store: Store,
   github: Github,
   linkedin: Linkedin,
   facebook: Facebook,

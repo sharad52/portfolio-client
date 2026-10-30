@@ -8,7 +8,8 @@ import { profile } from '@/content/site';
  * (label off pure-white) to stay within the reference palette.
  */
 export const Brand: React.FC<{
-  /** Hide the wordmark below the `sm` breakpoint (used in the header). */
+  /** Hide the wordmark below `sm`, and at `lg` where the full header nav is
+   *  tightest (used in the header). */
   hideNameOnMobile?: boolean;
   className?: string;
 }> = ({ hideNameOnMobile = false, className = '' }) => (
@@ -18,7 +19,7 @@ export const Brand: React.FC<{
     </span>
     <span
       className={`font-display text-base font-semibold tracking-tight text-fg ${
-        hideNameOnMobile ? 'hidden sm:block' : ''
+        hideNameOnMobile ? 'hidden sm:block lg:hidden xl:block' : ''
       }`}
     >
       {profile.name}

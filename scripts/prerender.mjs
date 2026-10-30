@@ -137,7 +137,7 @@ async function main() {
   const { MOCK_POSTS } = await import(postsModUrl);
 
   // site.ts is pure data (no runtime imports) → Node can import it directly.
-  const { profile, intakes, courses } = await import(
+  const { profile, intakes, courses, products } = await import(
     pathToFileURL(join(root, 'src/content/site.ts')).href
   );
 
@@ -254,6 +254,16 @@ async function main() {
           )
           .join('')}</ul>`,
     },
+    {
+      path: 'marketplace',
+      title: 'Marketplace — Buy Ready-Made Applications by Sharad Bhandari',
+      h1: 'Ready-made applications built by Sharad Bhandari',
+      description:
+        'Ready-made web and mobile applications built by Sharad Bhandari, a senior software engineer in Kathmandu, Nepal. Buy at the listed price or make an offer — full source code, deployment and support included.',
+      extra: `\n      <ul>${products
+        .map((p) => `<li>${escAttr(p.name)} — ${escAttr(p.tagline)}</li>`)
+        .join('')}</ul>`,
+    },
     { path: 'blog', title: 'Writing — Sharad Bhandari', h1: 'Writing by Sharad Bhandari', description: 'Articles and notes on software engineering, architecture, and building for the web by Sharad Bhandari.', ld: blogLd },
     { path: 'contact', title: contactTitle, h1: 'Hire a Senior Software Engineer in Nepal', description: 'Hire Sharad Bhandari — senior software engineer & Python / backend developer in Kathmandu, Nepal. Available for full-time, freelance, contract and remote roles worldwide.', ld: contactLd },
   ];
@@ -262,7 +272,7 @@ async function main() {
   const homeBody = bodyHtml(
     'Sharad Bhandari',
     'Senior Software Engineer & backend developer based in Kathmandu, Nepal. 7+ years building scalable, cloud-ready systems, APIs and async architectures.',
-    `\n      <nav aria-label="Primary">\n        <a href="/projects">Work</a>\n        <a href="/experience">Experience</a>\n        <a href="/tuition">Learn Python with Me</a>\n        <a href="/blog">Writing</a>\n        <a href="/contact">Contact</a>\n      </nav>`,
+    `\n      <nav aria-label="Primary">\n        <a href="/projects">Work</a>\n        <a href="/experience">Experience</a>\n        <a href="/marketplace">Marketplace</a>\n        <a href="/tuition">Learn Python with Me</a>\n        <a href="/blog">Writing</a>\n        <a href="/contact">Contact</a>\n      </nav>`,
   );
   await writeFile(templatePath, injectBody(template, homeBody), 'utf8');
 
@@ -353,6 +363,7 @@ async function main() {
     urlEntry(`${SITE_URL}/projects`, { priority: '0.8' }),
     urlEntry(`${SITE_URL}/experience`, { priority: '0.8' }),
     urlEntry(`${SITE_URL}/tuition`, { changefreq: 'weekly', priority: '0.8' }),
+    urlEntry(`${SITE_URL}/marketplace`, { changefreq: 'weekly', priority: '0.7' }),
     urlEntry(`${SITE_URL}/blog`, { changefreq: 'weekly', priority: '0.7' }),
     urlEntry(`${SITE_URL}/contact`, { changefreq: 'yearly', priority: '0.6' }),
     ...MOCK_POSTS.filter((p) => p.published !== false).map((p) =>

@@ -10,6 +10,7 @@ export const ROUTES = {
   EXPERIENCE: '/experience',
   SKILLS: '/skills',
   TUITION: '/tuition',
+  MARKETPLACE: '/marketplace',
   CONTACT: '/contact',
   ADMIN: '/admin',
   ADMIN_BLOG: '/admin/blog',
