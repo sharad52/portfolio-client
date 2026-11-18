@@ -39,6 +39,8 @@ jobs:
           # Python tuition enrolments — dedicated Apps Script URL so enrolments
           # land in their own sheet. Falls back to VITE_GOOGLE_SCRIPT_URL if unset.
           VITE_ENROLLMENT_SCRIPT_URL: ${{ secrets.VITE_ENROLLMENT_SCRIPT_URL }}
+          # Marketplace offers / purchase requests. Falls back to VITE_GOOGLE_SCRIPT_URL if unset.
+          VITE_MARKETPLACE_SCRIPT_URL: ${{ secrets.VITE_MARKETPLACE_SCRIPT_URL }}
           # Book-a-meeting (Google Calendar). VITE_BOOKING_URL is the public
           # appointment-schedule link; without it the button falls back to a
           # pre-invited calendar event using VITE_CALENDAR_EMAIL.

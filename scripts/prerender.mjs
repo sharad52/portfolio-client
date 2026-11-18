@@ -6,7 +6,7 @@
  *  (Facebook, LinkedIn, WhatsApp, X, Slack…) don't run JavaScript, so they only
  *  see the raw HTML at a URL. Without this step every shared link falls back to
  *  the homepage's tags (profile photo + site title). This generates a real
- *  HTML file per blog post and top-level route, each with its own title,
+ *  HTML file per blog post, marketplace product and top-level route, each with its own title,
  *  description and (for articles) cover image — so link previews are correct.
  *
  *  Runs after `vite build` (see package.json "build"). It reads dist/index.html
@@ -98,9 +98,9 @@ function applyMeta(template, { title, description, keywords, url, image, ogType,
   html = setMeta(html, 'name', 'twitter:image', image);
   html = setMeta(html, 'name', 'twitter:image:alt', title);
 
-  // Article cover images aren't the profile portrait — drop the homepage's
+  // Article / product images aren't the profile portrait — drop the homepage's
   // hardcoded dimensions so platforms don't reject a size mismatch.
-  if (ogType === 'article') {
+  if (ogType === 'article' || ogType === 'product') {
     html = removeMeta(html, 'property', 'og:image:width');
     html = removeMeta(html, 'property', 'og:image:height');
   }
@@ -137,8 +137,12 @@ async function main() {
   const { MOCK_POSTS } = await import(postsModUrl);
 
   // site.ts is pure data (no runtime imports) → Node can import it directly.
-  const { profile, intakes, courses } = await import(
+  const { profile, intakes, courses, products } = await import(
     pathToFileURL(join(root, 'src/content/site.ts')).href
+  );
+  // Same JSON-LD the React product page renders (pure module, types only).
+  const { productJsonLd } = await import(
+    pathToFileURL(join(root, 'src/features/marketplace/seo.ts')).href
   );
 
   let count = 0;
@@ -254,6 +258,16 @@ async function main() {
           )
           .join('')}</ul>`,
     },
+    {
+      path: 'marketplace',
+      title: 'Marketplace — Buy Ready-Made Applications by Sharad Bhandari',
+      h1: 'Ready-made applications built by Sharad Bhandari',
+      description:
+        'Ready-made web and mobile applications built by Sharad Bhandari, a senior software engineer in Kathmandu, Nepal. Buy at the listed price or make an offer — full source code, deployment and support included.',
+      extra: `\n      <ul>${products
+        .map((p) => `<li><a href="/marketplace/${escAttr(p.slug)}">${escAttr(p.name)}</a> — ${escAttr(p.tagline)}</li>`)
+        .join('')}</ul>`,
+    },
     { path: 'blog', title: 'Writing — Sharad Bhandari', h1: 'Writing by Sharad Bhandari', description: 'Articles and notes on software engineering, architecture, and building for the web by Sharad Bhandari.', ld: blogLd },
     { path: 'contact', title: contactTitle, h1: 'Hire a Senior Software Engineer in Nepal', description: 'Hire Sharad Bhandari — senior software engineer & Python / backend developer in Kathmandu, Nepal. Available for full-time, freelance, contract and remote roles worldwide.', ld: contactLd },
   ];
@@ -262,7 +276,7 @@ async function main() {
   const homeBody = bodyHtml(
     'Sharad Bhandari',
     'Senior Software Engineer & backend developer based in Kathmandu, Nepal. 7+ years building scalable, cloud-ready systems, APIs and async architectures.',
-    `\n      <nav aria-label="Primary">\n        <a href="/projects">Work</a>\n        <a href="/experience">Experience</a>\n        <a href="/tuition">Learn Python with Me</a>\n        <a href="/blog">Writing</a>\n        <a href="/contact">Contact</a>\n      </nav>`,
+    `\n      <nav aria-label="Primary">\n        <a href="/projects">Work</a>\n        <a href="/experience">Experience</a>\n        <a href="/marketplace">Marketplace</a>\n        <a href="/tuition">Learn Python with Me</a>\n        <a href="/blog">Writing</a>\n        <a href="/contact">Contact</a>\n      </nav>`,
   );
   await writeFile(templatePath, injectBody(template, homeBody), 'utf8');
 
@@ -278,6 +292,52 @@ async function main() {
       body: bodyHtml(r.h1, r.description, r.extra ?? ''),
     });
     await writeRoute(r.path, html);
+    count++;
+  }
+
+  // One static HTML file per marketplace product — the page that ranks for
+  // searches like "expense tracker app source code". The fallback body carries
+  // the full copy (overview, feature sections, FAQ) so no-JS crawlers index it.
+  const list = (items) => `<ul>${items.map((i) => `<li>${escAttr(i)}</li>`).join('')}</ul>`;
+  for (const p of products) {
+    const url = `${SITE_URL}/marketplace/${p.slug}`;
+    const title = p.seo?.title ?? `${p.name} — ${p.tagline}`;
+    const description = p.seo?.description ?? p.summary;
+    const price = p.currency === 'NPR' ? `Rs. ${p.askingPrice.toLocaleString('en-IN')}` : `$${p.askingPrice.toLocaleString('en-US')}`;
+    const extra = [
+      ...(p.overview ?? []).map((para) => `<p>${escAttr(para)}</p>`),
+      p.platforms && `<p>Platforms: ${escAttr(p.platforms.join(', '))}</p>`,
+      `<p>Asking price: ${escAttr(price)}${p.minimumBid !== undefined ? ' — offers welcome' : ''}.</p>`,
+      `<h2>Features</h2>${list(p.features)}`,
+      ...(p.sections ?? []).map(
+        (sec) => `<h2>${escAttr(sec.heading)}</h2><p>${escAttr(sec.body)}</p>${sec.points ? list(sec.points) : ''}`,
+      ),
+      `<h2>What you get</h2>${list(p.includes)}`,
+      `<h2>Built with</h2>${list(p.techStack)}`,
+      p.audiences && `<h2>A great fit for</h2>${list(p.audiences)}`,
+      p.faq &&
+        `<h2>Questions about ${escAttr(p.name)}</h2><dl>${p.faq
+          .map(({ q, a }) => `<dt>${escAttr(q)}</dt><dd>${escAttr(a)}</dd>`)
+          .join('')}</dl>`,
+      `<p><a href="/marketplace">Browse all applications in the marketplace</a></p>`,
+    ]
+      .filter(Boolean)
+      .map((x) => `\n      ${x}`)
+      .join('');
+
+    const html = applyMeta(template, {
+      title,
+      description,
+      keywords: p.seo?.keywords.join(', '),
+      url,
+      image: absImage(p.ogImage ?? p.logo),
+      ogType: 'product',
+      articleMeta: productJsonLd(p, SITE_URL, profile.name)
+        .map((ld) => `<script type="application/ld+json">${JSON.stringify(ld)}</script>`)
+        .join('\n    '),
+      body: bodyHtml(p.name, p.tagline, extra),
+    });
+    await writeRoute(`marketplace/${p.slug}`, html);
     count++;
   }
 
@@ -353,6 +413,14 @@ async function main() {
     urlEntry(`${SITE_URL}/projects`, { priority: '0.8' }),
     urlEntry(`${SITE_URL}/experience`, { priority: '0.8' }),
     urlEntry(`${SITE_URL}/tuition`, { changefreq: 'weekly', priority: '0.8' }),
+    urlEntry(`${SITE_URL}/marketplace`, { changefreq: 'weekly', priority: '0.7' }),
+    ...products.map((p) =>
+      urlEntry(`${SITE_URL}/marketplace/${p.slug}`, {
+        changefreq: 'weekly',
+        priority: '0.8',
+        image: p.ogImage || p.logo ? { loc: absImage(p.ogImage ?? p.logo), title: p.seo?.title ?? p.name } : undefined,
+      }),
+    ),
     urlEntry(`${SITE_URL}/blog`, { changefreq: 'weekly', priority: '0.7' }),
     urlEntry(`${SITE_URL}/contact`, { changefreq: 'yearly', priority: '0.6' }),
     ...MOCK_POSTS.filter((p) => p.published !== false).map((p) =>
@@ -367,7 +435,7 @@ async function main() {
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset\n  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n  xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"\n>\n${urls.join('\n')}\n</urlset>\n`;
   await writeFile(join(dist, 'sitemap.xml'), sitemap, 'utf8');
 
-  console.log(`✓ prerendered ${count} routes (${STATIC_ROUTES.length} static + ${count - STATIC_ROUTES.length} posts) + sitemap.xml (${urls.length} urls)`);
+  console.log(`✓ prerendered ${count} routes (${STATIC_ROUTES.length} static + ${products.length} products + ${count - STATIC_ROUTES.length - products.length} posts) + sitemap.xml (${urls.length} urls)`);
 }
 
 main().catch((err) => {
